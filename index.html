@@ -1,0 +1,2904 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>홍보마케팅 원소스 관리 시스템</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+/* ── TOKENS ─────────────────────────────────────────── */
+:root{
+  --bg:#F7F7F8;
+  --surface:#fff;
+  --surface-sub:#F3F3F5;
+  --border:#E4E4E8;
+  --border-mid:#D0D0D6;
+  --text:#111118;
+  --text-2:#5A5A6E;
+  --text-3:#9494A8;
+  --accent:#4F46E5;
+  --accent-bg:#EEF0FD;
+  --accent-text:#3730A3;
+  --danger:#DC2626;
+  --danger-bg:#FEF2F2;
+  --success-bg:#F0FDF4;
+  --success-text:#166534;
+  --warning-bg:#FFFBEB;
+  --warning-text:#92400E;
+  --r:8px;
+  --r-lg:12px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+input,select,textarea,button{font-family:inherit}
+input,select,textarea{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:13px;color:var(--text);outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select{cursor:pointer}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:180px 1fr;min-height:100vh}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:.75rem 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto}
+.logo{padding:.75rem 1rem .875rem;margin-bottom:.25rem}
+.logo h1{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.logo p{font-size:11px;color:var(--text-3);margin-top:2px}
+
+.nav-item{display:flex;align-items:center;gap:7px;padding:5px 1rem;font-size:13px;cursor:pointer;color:var(--text-2);border-radius:0;transition:background .1s,color .1s;white-space:nowrap;position:relative}
+.nav-item:hover{background:var(--surface-sub);color:var(--text)}
+.nav-item.on{color:var(--accent);background:var(--accent-bg);font-weight:600}
+.nav-item.on::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-item i{font-size:15px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--surface-sub);border-radius:20px;padding:1px 7px;font-size:10px;font-weight:600;color:var(--text-3)}
+.nav-item.on .nav-badge{background:rgba(79,70,229,.12);color:var(--accent)}
+
+.nav-parent{display:flex;align-items:center;gap:7px;padding:5px 1rem;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;user-select:none;letter-spacing:normal;text-transform:none;margin-top:0;position:relative}
+.nav-parent.on{color:var(--accent);background:var(--accent-bg);font-weight:600}
+.nav-parent.on::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-parent i.nav-chevron{margin-left:auto;font-size:12px;transition:transform .15s;color:var(--text-3)}
+.nav-parent.open i.nav-chevron{transform:rotate(180deg)}
+.nav-sub{display:none}
+.nav-sub.open{display:block}
+.nav-sub .nav-item{padding:4px 1rem 4px 2rem;font-size:12px}
+.nav-sub-sec{font-size:10px;color:var(--text-3);padding:8px 1rem 2px 2rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.nav-sub-sec.on{color:var(--accent);}
+
+.main{overflow-y:auto;overflow-x:visible;padding:1.5rem 2rem}
+.page{display:none}
+.page.on{display:block}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.topbar h2{font-size:18px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;border-radius:var(--r);font-size:13px;cursor:pointer;font-family:inherit;padding:7px 14px;transition:all .12s;border:none;font-weight:500;letter-spacing:-.01em}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#4338CA}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface-sub)}
+.btn-ghost{background:none;color:var(--text-2);padding:5px 8px;border:none}
+.btn-ghost:hover{background:var(--surface-sub);color:var(--text)}
+.btn-sm{padding:4px 10px;font-size:12px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 16px}
+.stat-label{font-size:11px;color:var(--text-3);margin-bottom:5px;font-weight:500;letter-spacing:.02em;text-transform:uppercase}
+.stat-num{font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:1rem}
+.card-toolbar{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-toolbar input{width:200px}
+.frow{display:flex;gap:4px;flex-wrap:wrap}
+.fc{border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:12px;cursor:pointer;background:var(--surface);color:var(--text-2);font-family:inherit;white-space:nowrap;font-weight:500;transition:all .1s}
+.fc:hover{border-color:var(--border-mid);color:var(--text)}
+.fc.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-text);font-weight:600}
+
+/* PROGRAM LIST */
+.prog-list{list-style:none}
+.prog-row{display:grid;grid-template-columns:1fr 110px 160px 90px;align-items:start;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;gap:14px}
+.prog-row:last-child{border-bottom:none}
+.prog-row:hover{background:#FAFAFA}
+.prog-name{font-weight:600;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:6px;letter-spacing:-.01em}
+.prog-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+.req-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.rchip{font-size:10px;border-radius:4px;padding:2px 6px;white-space:nowrap;font-weight:600;letter-spacing:.01em}
+.rc-recruit{background:#EEF0FD;color:#3730A3}
+.rc-content{background:#ECFDF5;color:#065F46}
+.rc-video{background:#FFF7ED;color:#92400E}
+.rc-photo{background:#F5F3FF;color:#5B21B6}
+.rc-pr{background:#FFF1F2;color:#9F1239}
+.rc-signage{background:#ECFDF5;color:#065F46}
+.updated-dot{width:6px;height:6px;border-radius:50%;background:#EF4444;flex-shrink:0}
+
+/* STATUS */
+.sbox{display:inline-flex;align-items:center;gap:4px;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:.01em}
+.s-a{background:#FFFBEB;color:#92400E}
+.s-b{background:#FFF7ED;color:#C2410C}
+.s-b2{background:#FEF9C3;color:#854D0E}
+.s-c{background:#EEF0FD;color:#3730A3}
+.s-d{background:#ECFDF5;color:#065F46}
+.s-e{background:var(--surface-sub);color:var(--text-3)}
+
+.status-sel{font-size:11px;border:1px solid var(--border);border-radius:20px;padding:3px 9px;background:var(--surface);cursor:pointer;font-family:inherit;outline:none;font-weight:500;color:var(--text-2)}
+.status-sel:focus{border-color:var(--accent)}
+
+/* EMPTY */
+.empty{padding:3rem;text-align:center;color:var(--text-3)}
+.empty i{font-size:28px;display:block;margin-bottom:.75rem}
+
+/* PROGRAM DETAIL */
+.detail-layout{display:flex;flex-direction:column;gap:1rem}
+.detail-main{}
+.detail-side{}
+
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem}
+.info-card-title{font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+
+/* EDITABLE FIELD */
+.ef-row{padding:9px 0;border-bottom:1px solid var(--border);display:flex;gap:10px}
+.ef-row:last-child{border-bottom:none}
+.ef-label{font-size:12px;color:var(--text-3);width:90px;flex-shrink:0;padding-top:2px;font-weight:500}
+.ef-val{flex:1;font-size:13px;line-height:1.55;cursor:pointer;border-radius:4px;padding:1px 5px;margin:-1px -5px;transition:background .1s}
+.ef-val:hover{background:var(--surface-sub)}
+.ef-val.empty-val{color:var(--text-3);font-style:italic}
+.ef-editing .ef-val{display:none}
+.ef-input-wrap{flex:1;display:none;gap:6px;align-items:flex-start}
+.ef-editing .ef-input-wrap{display:flex}
+.ef-input-wrap input,.ef-input-wrap textarea{flex:1;font-size:13px}
+.ef-input-wrap textarea{min-height:64px;resize:vertical}
+.ef-actions{display:flex;flex-direction:column;gap:3px}
+
+/* REQUESTS */
+.req-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:.75rem;overflow:hidden}
+.req-head{padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--surface-sub)}
+.req-head-title{font-size:13px;font-weight:500;flex:1}
+.req-body{padding:14px 16px}
+.req-field{display:flex;gap:10px;margin-bottom:9px;font-size:13px}
+.req-field:last-child{margin-bottom:0}
+.req-field-label{font-size:11px;color:var(--text-3);width:80px;flex-shrink:0;padding-top:2px;font-weight:500}
+.req-field-val{flex:1;line-height:1.55}
+
+/* CHANGELOG */
+.changelog{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.cl-head{padding:11px 16px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between}
+.cl-list{}
+.cl-item{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px}
+.cl-item:last-child{border-bottom:none}
+.cl-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent-text);flex-shrink:0}
+.cl-avatar.team{background:#EDE9FE;color:#5B21B6}
+.cl-bubble{flex:1;min-width:0;background:var(--surface-sub);border-radius:2px var(--r-lg) var(--r-lg) var(--r-lg);padding:9px 12px}
+.cl-who{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.cl-what{font-size:12px;color:var(--text-2);line-height:1.55;word-break:break-all}
+.cl-memo{font-size:12px;color:var(--text);background:var(--surface);border-radius:var(--r);padding:6px 10px;margin-top:6px;line-height:1.5;border-left:2px solid var(--accent)}
+.cl-time{font-size:10px;color:var(--text-3);margin-top:5px;font-weight:500}
+
+/* ADD REQUEST */
+.add-req-btn{display:flex;align-items:center;gap:6px;padding:11px 16px;font-size:13px;color:var(--accent);cursor:pointer;border:1.5px dashed #C7D2FE;border-radius:var(--r-lg);background:none;font-family:inherit;width:100%;justify-content:center;transition:background .12s;font-weight:500}
+.add-req-btn:hover{background:var(--accent-bg)}
+
+/* FORM */
+.form-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;max-width:560px}
+.fsec{margin-bottom:1.75rem}
+.fsec-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.01em;padding-bottom:10px;border-bottom:2px solid var(--border);margin-bottom:16px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:5px;color:var(--text-2);letter-spacing:-.01em}
+.req-mark{color:var(--danger)}
+.hint{font-size:11px;font-weight:400;color:var(--text-3);margin-left:5px}
+.field input,.field select,.field textarea{width:100%}
+.field textarea{min-height:72px;resize:vertical}
+.ferr{font-size:11px;color:var(--danger);margin-top:3px;display:none}
+.field.err input,.field.err select,.field.err textarea{border-color:var(--danger)}
+.field.err .ferr{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* TYPE CARDS */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tc{border:1.5px solid var(--border);border-radius:var(--r-lg);padding:11px 13px;cursor:pointer;background:var(--surface);display:flex;align-items:flex-start;gap:10px;transition:all .12s}
+.tc:hover{border-color:var(--border-mid);background:var(--surface-sub)}
+.tc.on{border-color:var(--accent);background:var(--accent-bg)}
+.tc i{font-size:16px;margin-top:1px;color:var(--text-3);flex-shrink:0}
+.tc.on i{color:var(--accent)}
+.tc-name{font-size:13px;font-weight:600;letter-spacing:-.01em}
+.tc.on .tc-name{color:var(--accent-text)}
+.tc-desc{font-size:11px;color:var(--text-3);margin-top:2px;line-height:1.4}
+
+/* AUTOCOMPLETE */
+.ac-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:3px}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover{background:var(--surface-sub)}
+.ac-item-name{font-weight:600;color:var(--text)}
+.ac-item-meta{font-size:11px;color:var(--text-3)}
+.ac-item-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;border-radius:4px;padding:1px 6px;margin-left:4px;font-weight:600}
+
+/* CHANNEL CHECKBOXES */
+.ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ch-label{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:7px 11px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);transition:all .1s;user-select:none}
+.ch-label:hover{border-color:var(--border-mid);background:var(--surface-sub)}
+.ch-label input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.ch-label.checked{border-color:var(--accent);background:var(--accent-bg);color:var(--accent-text);font-weight:500}
+
+/* COND */
+.cond{display:none}
+
+/* DEADLINE */
+.dl-note{display:inline-flex;align-items:center;gap:6px;background:var(--warning-bg);border-radius:var(--r);padding:6px 11px;font-size:11px;color:var(--warning-text);margin-bottom:12px;font-weight:500}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;display:none;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:var(--r-lg);width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+@media(prefers-color-scheme:dark){.modal{background:#18181B}}
+.modal-head{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.modal-body{padding:1.25rem}
+.modal-foot{padding:.875rem 1.25rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px 16px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:100;display:none;align-items:center;gap:8px;color:var(--success-text);font-weight:500}
+.toast.on{display:flex}
+
+.hist-row:hover{background:#FAFAFA}
+.hist-row:last-child{border-bottom:none}
+.th-cell{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;display:flex;align-items:center;gap:3px;user-select:none}
+.th-cell:hover{color:var(--text-2)}
+.sort-icon{font-size:10px;color:var(--accent)}
+
+/* BACK LINK */
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-3);cursor:pointer;margin-bottom:.875rem;font-weight:500}
+.back-btn:hover{color:var(--text)}
+
+@media(max-width:800px){
+  .detail-layout{grid-template-columns:1fr}
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo"><h1>홍보마케팅 원소스 관리</h1><p>디캠프 홍보마케팅팀</p></div>
+  <!-- 신규 등록 -->
+  <div class="nav-item" onclick="showPage('new-prog')" id="nav-new-prog"><i class="ti ti-plus"></i>신규 등록</div>
+
+  <!-- 조회·수정 -->
+  <div class="nav-parent" id="nav-parent-view" onclick="toggleNavParent('view');showPage('list');renderList()">
+    <i class="ti ti-search"></i>조회·수정
+    <i class="ti ti-chevron-down nav-chevron"></i>
+  </div>
+  <div class="nav-sub" id="nav-sub-view"></div>
+
+  <!-- 변경 히스토리 -->
+  <div class="nav-item" onclick="showPage('history')" id="nav-history" style="margin-top:4px"><i class="ti ti-history"></i>변경 히스토리</div>
+
+  <!-- 현재 사용자 -->
+  <div style="margin-top:auto;padding:12px 1rem;border-top:1px solid var(--border)">
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:4px">접속 중</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span id="sidebar-username" style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">–</span>
+      <button onclick="openNameModal()" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;flex-shrink:0">변경</button>
+    </div>
+    <button onclick="logout()" style="margin-top:8px;font-size:11px;color:var(--text-3);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:flex;align-items:center;gap:4px">
+      <i class="ti ti-logout" style="font-size:12px"></i>로그아웃
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- LIST -->
+  <div class="page on" id="page-list">
+    <div class="topbar">
+      <h2 id="list-title">조회·수정</h2>
+      <button class="btn btn-primary" onclick="showPage('new-prog')"><i class="ti ti-plus"></i>신규 등록</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">전체 프로그램</div><div class="stat-num" id="st-total">–</div></div>
+      <div class="stat"><div class="stat-label">진행 중</div><div class="stat-num" id="st-active">–</div></div>
+      <div class="stat"><div class="stat-label">이번 주 변경</div><div class="stat-num" id="st-changed">–</div></div>
+      <div class="stat"><div class="stat-label">완료</div><div class="stat-num" id="st-done">–</div></div>
+    </div>
+    <div class="card">
+      <div class="card-toolbar">
+        <select id="dd-status" onchange="setDropFilter()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text-2);cursor:pointer;font-family:inherit">
+          <option value="all">진행상태 전체</option>
+          <option value="active" selected>진행 중</option>
+          <option value="done">완료</option>
+          <option value="hold">보류/취소</option>
+        </select>
+        <select id="dd-type" onchange="setDropFilter()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text-2);cursor:pointer;font-family:inherit">
+          <option value="all">유형 전체</option>
+          <option value="pr">언론홍보</option>
+          <option value="recruit">모집</option>
+          <option value="content">콘텐츠</option>
+          <option value="video">현장 스케치 영상</option>
+          <option value="photo">사진촬영</option>
+          <option value="signage">사이니지</option>
+        </select>
+        <select id="dd-team" onchange="setDropFilter()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text-2);cursor:pointer;font-family:inherit">
+          <option value="">팀 전체</option>
+          <optgroup label="사업실">
+            <option>biz ops</option>
+            <option>growth</option>
+            <option>space</option>
+            <option>resource</option>
+          </optgroup>
+          <optgroup label="글로벌사업실">
+            <option>글로벌사업팀</option>
+          </optgroup>
+          <optgroup label="투자실">
+            <option>펀드팀</option>
+            <option>투자팀</option>
+            <option>투자전략팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부 · 기획실">
+            <option>전략팀</option>
+            <option>IT팀</option>
+            <option>홍보마케팅팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부 · 인사실">
+            <option>인사팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부">
+            <option>재무팀</option>
+          </optgroup>
+        </select>
+        <input type="search" placeholder="건명 검색…" id="q" oninput="renderList()" style="flex:1;min-width:160px">
+      </div>
+      <!-- 테이블 헤더 -->
+      <div style="display:grid;grid-template-columns:1fr 110px 160px 90px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--bg)">
+        <div class="th-cell" onclick="setSort('name')">프로그램/프로젝트명 <span id="sort-name" class="sort-icon"></span></div>
+        <div class="th-cell" onclick="setSort('team')">담당팀 <span id="sort-team" class="sort-icon"></span></div>
+        <div class="th-cell">진행 상태</div>
+        <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end">
+          <div class="th-cell th-right" onclick="setSort('createdAt')" style="justify-content:flex-end">최초 작성 <span id="sort-createdAt" class="sort-icon"></span></div>
+          <div class="th-cell th-right" onclick="setSort('updatedAt')" style="justify-content:flex-end;color:var(--accent)">최신 변경 <span id="sort-updatedAt" class="sort-icon"></span></div>
+        </div>
+      </div>
+      <ul class="prog-list" id="prog-list"><li class="empty"><i class="ti ti-inbox"></i>불러오는 중…</li></ul>
+    </div>
+  </div>
+
+  <!-- PROGRAM DETAIL -->
+  <div class="page" id="page-detail">
+    <div class="back-btn" onclick="showPage('list')"><i class="ti ti-arrow-left"></i>목록으로</div>
+    <div class="topbar">
+      <h2 id="detail-title">–</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" onclick="openAddReq()"><i class="ti ti-plus"></i>항목 추가</button>
+      </div>
+    </div>
+    <div class="detail-layout">
+      <div class="detail-main">
+        <!-- 프로그램 기본 정보 -->
+        <div class="info-card">
+          <div class="info-card-title">
+            기본 정보
+            <div style="display:flex;align-items:center;gap:12px">
+              <span id="detail-created" style="font-size:11px;color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0"></span>
+              <span style="font-size:11px;color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">항목 더블클릭 시 수정</span>
+            </div>
+          </div>
+          <div id="prog-fields"></div>
+        </div>
+        <!-- 요청들 -->
+        <div id="req-list"></div>
+        <button class="add-req-btn" onclick="openAddReq()"><i class="ti ti-plus"></i>항목 추가하기</button>
+      </div>
+
+      <!-- 변경 이력 — 댓글처럼 아래에 -->
+      <div class="changelog">
+        <div class="cl-head">
+          <div style="display:flex;align-items:center;gap:6px">
+            <i class="ti ti-history" style="font-size:14px"></i>변경 이력
+            <span id="cl-count" style="font-weight:400;color:var(--text-3);font-size:11px">0건</span>
+          </div>
+        </div>
+        <div class="cl-list" id="cl-list"></div>
+        <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
+          <input type="text" id="comment-input" placeholder="댓글 남기기…" style="flex:1;font-size:13px"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitComment()}">
+          <button class="btn btn-primary btn-sm" onclick="submitComment()"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+      <div style="padding:1.5rem 0;display:flex;justify-content:center">
+        <button class="btn btn-sm" style="background:none;color:var(--text-3);border:1px solid var(--border);font-size:12px" onclick="confirmDeleteProg()"><i class="ti ti-trash" style="font-size:13px"></i>이 프로그램 삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="page" id="page-history">
+    <div class="topbar">
+      <h2>변경 히스토리</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="hist-filter" onchange="renderHistory()" style="font-size:13px;padding:6px 10px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface)">
+          <option value="all">전체</option>
+          <optgroup label="사업실">
+            <option value="biz ops">biz ops</option>
+            <option value="growth">growth</option>
+            <option value="space">space</option>
+            <option value="resource">resource</option>
+          </optgroup>
+          <optgroup label="글로벌사업실">
+            <option value="글로벌사업팀">글로벌사업팀</option>
+          </optgroup>
+          <optgroup label="투자실">
+            <option value="펀드팀">펀드팀</option>
+            <option value="투자팀">투자팀</option>
+            <option value="투자전략팀">투자전략팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부 · 기획실">
+            <option value="전략팀">전략팀</option>
+            <option value="IT팀">IT팀</option>
+            <option value="홍보마케팅팀">홍보마케팅팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부 · 인사실">
+            <option value="인사팀">인사팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부">
+            <option value="재무팀">재무팀</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <div class="card" id="history-list"></div>
+  </div>
+
+  <!-- NEW PROGRAM FORM -->
+  <div class="page" id="page-new-prog">
+    <div class="topbar"><h2>신규 등록</h2></div>
+    <div class="form-wrap">
+      <div class="fsec">
+        <div class="fsec-title">담당팀 정보</div>
+        <div class="row2">
+          <div class="field" id="f-team">
+            <label>담당팀 <span class="req-mark">*</span></label>
+            <select id="fv-team" onchange="clrE('f-team')">
+              <option value="">선택</option>
+              <optgroup label="사업실">
+                <option>biz ops</option>
+                <option>growth</option>
+                <option>space</option>
+                <option>resource</option>
+              </optgroup>
+              <optgroup label="글로벌사업실">
+                <option>글로벌사업팀</option>
+              </optgroup>
+              <optgroup label="투자실">
+                <option>펀드팀</option>
+                <option>투자팀</option>
+                <option>투자전략팀</option>
+              </optgroup>
+              <optgroup label="경영지원본부 · 기획실">
+                <option>전략팀</option>
+                <option>IT팀</option>
+                <option>홍보마케팅팀</option>
+              </optgroup>
+              <optgroup label="경영지원본부 · 인사실">
+                <option>인사팀</option>
+              </optgroup>
+              <optgroup label="경영지원본부">
+                <option>재무팀</option>
+              </optgroup>
+              <option>기타</option>
+            </select>
+            <div class="ferr">담당팀을 선택해주세요.</div>
+          </div>
+          <div class="field" id="f-person">
+            <label>담당자 <span class="req-mark">*</span></label>
+            <input id="fv-person" type="text" placeholder="이름" oninput="clrE('f-person')">
+            <div class="ferr">담당자를 입력해주세요.</div>
+          </div>
+        </div>
+      </div>
+      <div class="fsec">
+        <div class="fsec-title">기본 정보</div>
+        <div class="field" id="f-prog" style="position:relative">
+          <label>프로그램/프로젝트명 <span class="req-mark">*</span></label>
+          <input id="fv-prog" type="text" placeholder="예: 11월 오피스아워 #벤처투자" oninput="onProgInput()" onblur="hideAC()" autocomplete="off">
+          <div id="ac-drop" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:999;max-height:240px;overflow-y:auto"></div>
+          <div class="ferr">건명을 입력해주세요.</div>
+        </div>
+        <div class="field">
+          <label>주요 타깃</label>
+          <input id="fv-target" type="text" placeholder="예: IR점검 및 투자유치를 희망하는 스타트업">
+        </div>
+        <div class="field">
+          <label>특징 <span class="hint">강조점, 특이사항 등</span></label>
+          <textarea id="fv-benefit" placeholder="예: 모빌리티, AI, 배터리, 로보틱스, 물류, 우주항공,&#10;뷰티, 콘텐츠, 소비재 분야 투자를 검토하는 12개 VC 참여"></textarea>
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <label style="margin-bottom:0">행사 / 진행 일정 <span class="req-mark">*</span></label>
+            <span style="font-size:11px;display:flex;gap:8px">
+              <button type="button" id="event-tab-date" onclick="setEventMode('date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+              <button type="button" id="event-tab-text" onclick="setEventMode('text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+            </span>
+          </div>
+          <div id="event-date-mode" style="display:flex;align-items:center;gap:6px">
+            <input id="fv-event-from" type="datetime-local" style="flex:1;font-size:12px">
+            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+            <input id="fv-event-to" type="datetime-local" style="flex:1;font-size:12px">
+          </div>
+          <div id="event-text-mode" style="display:none">
+            <input id="fv-event-text" type="text" placeholder="예: 10월 중 / 11월 초 예정 / 미정">
+          </div>
+        </div>
+        <div class="field">
+          <label>관련 자료 링크 <span class="hint">운영시트, 계획안, 키비주얼 등</span></label>
+
+          <div id="fv-doc-list" style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="text" placeholder="https://drive.google.com/…" style="flex:1" class="doc-url">
+              <input type="text" placeholder="예: 계획안" style="width:120px;flex-shrink:0" class="doc-label">
+              <button type="button" onclick="addDocField()" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--accent)">+</button>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--accent-text);margin-top:7px;line-height:1.8;background:var(--accent-bg);border-radius:var(--r);padding:7px 10px">
+            <span style="color:var(--accent)">※</span> 홍보마케팅팀(prmarketing@dcamp.kr)에 <strong>댓글 권한</strong> 이상을 부여해주세요 (열람 및 대행사 권한 부여용)<br>
+            <span style="color:var(--accent)">※</span> 공유된 자료는 업무 목적에 따라 마케팅 대행사 등 외부 협력사에 공유될 수 있습니다.
+          </div>
+        </div>
+      </div>
+      <div class="fsec">
+        <div class="fsec-title">진행 유형 <span style="font-size:12px;font-weight:400;color:var(--text-3);letter-spacing:0">— 중복 선택 가능 <span class="req-mark">*</span></span></div>
+        <div id="type-err" style="display:none;font-size:11px;color:var(--danger);margin-bottom:8px">요청을 하나 이상 선택해주세요.</div>
+        <div class="type-grid" style="margin-bottom:12px;grid-template-columns:1fr 1fr">
+          <div class="tc" onclick="toggleT('pr')" id="tc-pr">
+            <i class="ti ti-news"></i>
+            <div><div class="tc-name">언론홍보</div><div class="tc-desc">보도자료 배포, 현장취재(기자초청), 기획 기사 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleT('recruit')" id="tc-recruit">
+            <i class="ti ti-speakerphone"></i>
+            <div><div class="tc-name">모집</div><div class="tc-desc">공고 업로드, 커뮤니티 게재, 유료 광고 집행 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleT('content')" id="tc-content">
+            <i class="ti ti-file-text"></i>
+            <div><div class="tc-name">콘텐츠</div><div class="tc-desc">홈페이지, SNS, 뉴스레터 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleT('video')" id="tc-video">
+            <i class="ti ti-video"></i>
+            <div><div class="tc-name">현장 스케치 영상</div><div class="tc-desc">행사 현장 촬영 및 편집</div></div>
+          </div>
+          <div class="tc" onclick="toggleT('photo')" id="tc-photo">
+            <i class="ti ti-camera"></i>
+            <div><div class="tc-name">사진촬영</div><div class="tc-desc">행사 스케치 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleT('signage')" id="tc-signage">
+            <i class="ti ti-device-tv"></i>
+            <div><div class="tc-name">사이니지</div><div class="tc-desc">디지털 사이니지 송출</div></div>
+          </div>
+        </div>
+
+        <!-- 모집 상세 -->
+        <div class="cond" id="cs-recruit">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+            <span style="font-size:13px;font-weight:700;color:var(--text)">모집</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>집행 희망일 10일 전 공유</span>
+          </div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:14px;line-height:1.8;background:var(--accent-bg);border-radius:var(--r);padding:7px 10px">
+            <span style="color:var(--accent)">※</span> 공고 업로드, 커뮤니티 게재, 유료 광고 집행 등을 포함한 마케팅 기획안을 전달드립니다.
+          </div>
+          <div class="field">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+              <label style="margin-bottom:0">모집 기간</label>
+              <span style="display:flex;gap:8px">
+                <button type="button" id="fv-recruit-tab-date" onclick="setDateMode('fv-recruit','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+                <button type="button" id="fv-recruit-tab-text" onclick="setDateMode('fv-recruit','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+              </span>
+            </div>
+            <div id="fv-recruit-date-mode" style="display:flex;align-items:center;gap:6px">
+              <input id="fv-recruit-from" type="date" style="flex:1">
+              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+              <input id="fv-recruit-to" type="date" style="flex:1">
+            </div>
+            <div id="fv-recruit-text-mode" style="display:none">
+              <input id="fv-recruit-text" type="text" placeholder="예: 10월 중 / 11월 초 예정 / 미정">
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>모집 목표 <span class="hint">(KPI)</span></label><input id="fv-goal" placeholder="예: 90명"></div>
+            <div class="field"><label>모집 링크 <span class="hint">모집 3일 전 공유</span></label><input id="fv-link" placeholder="https://dcamp.kr/…"></div>
+          </div>
+          <div class="field">
+            <label>모집 관련 참고사항</label>
+            <textarea id="fv-camp-note" placeholder="예: 인지도 제고에 집중해주세요&#10;예: 타깃 모집에 집중해주세요"></textarea>
+          </div>
+        </div>
+
+        <!-- 콘텐츠 상세 -->
+        <div class="cond" id="cs-content">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+            <span style="font-size:13px;font-weight:700;color:var(--text)">콘텐츠</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>게재 희망일 최소 7일 전 공유 (콘텐츠 유형에 따라 상이)</span>
+          </div>
+          <div class="field">
+            <label>희망 채널 <span class="hint">복수 선택</span></label>
+            <div class="ch-grid" id="fv-channels">
+              <label class="ch-label"><input type="checkbox" value="홈페이지" onchange="toggleChLabel(this)">홈페이지</label>
+              <label class="ch-label"><input type="checkbox" value="링크드인" onchange="toggleChLabel(this)">링크드인</label>
+              <label class="ch-label"><input type="checkbox" value="인스타그램" onchange="toggleChLabel(this)">인스타그램</label>
+              <label class="ch-label"><input type="checkbox" value="페이스북" onchange="toggleChLabel(this)">페이스북</label>
+              <label class="ch-label"><input type="checkbox" value="유튜브 (현장스케치 외)" onchange="toggleChLabel(this)">유튜브 (현장스케치 외)</label>
+              <label class="ch-label"><input type="checkbox" value="뉴스레터" onchange="toggleChLabel(this)">뉴스레터</label>
+            </div>
+          </div>
+          <div class="field">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+              <label style="margin-bottom:0">게재 희망일</label>
+              <span style="display:flex;gap:8px">
+                <button type="button" id="fv-cont-tab-date" onclick="setDateMode('fv-cont','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+                <button type="button" id="fv-cont-tab-text" onclick="setDateMode('fv-cont','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+              </span>
+            </div>
+            <div id="fv-cont-date-mode" style="display:flex;align-items:center;gap:6px">
+              <input id="fv-cont-from" type="date" style="flex:1">
+            </div>
+            <div id="fv-cont-text-mode" style="display:none">
+              <input id="fv-cont-text" type="text" placeholder="예: 모집 시작일 / 10월 중">
+            </div>
+          </div>
+          <div class="field">
+            <label>주요 내용</label>
+            <textarea id="fv-cont-body" placeholder="예: 배치 7기 합격 기업 인터뷰&#10;예: 오피스아워 멘토 라인업 소개"></textarea>
+          </div>
+          <div class="field">
+            <label>콘텐츠 관련 참고사항</label>
+            <textarea id="fv-cont-desc" placeholder="예: 유니콘 기업으로 성장한 패밀리사와의 협력이 잘 드러나게 작성해주세요"></textarea>
+          </div>
+        </div>
+
+        <!-- 현장 스케치 영상 상세 -->
+        <div class="cond" id="cs-video">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+            <span style="font-size:13px;font-weight:700;color:var(--text)">현장 스케치 영상</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>촬영일 2주 전 공유</span>
+          </div>
+          <div class="field">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+              <label style="margin-bottom:0">촬영 일시</label>
+              <span style="display:flex;gap:8px">
+                <button type="button" id="fv-video-tab-date" onclick="setDateMode('fv-video','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+                <button type="button" id="fv-video-tab-text" onclick="setDateMode('fv-video','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+              </span>
+            </div>
+            <div id="fv-video-date-mode" style="display:flex;align-items:center;gap:6px">
+              <input id="fv-video-from" type="datetime-local" style="flex:1;font-size:12px">
+              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+              <input id="fv-video-to" type="datetime-local" style="flex:1;font-size:12px">
+            </div>
+            <div id="fv-video-text-mode" style="display:none">
+              <input id="fv-video-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
+            </div>
+          </div>
+          <div class="field"><label>촬영 장소</label><input id="fv-video-where" placeholder="예: 마포 4층"></div>
+          <div class="field">
+            <label>촬영 관련 참고사항</label>
+            <textarea id="fv-video-note" placeholder="예: 참가자 인터뷰 포함&#10;예: 밝고 활동적인 분위기로 편집해주세요"></textarea>
+          </div>
+          <div style="background:#EEF0FD;border-radius:var(--r);padding:10px 12px;margin-top:4px">
+            <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin-bottom:0;font-weight:400;color:var(--text-2)">
+              <input type="checkbox" id="fv-video-consent" style="margin-top:2px;flex-shrink:0;accent-color:var(--accent)">
+              <span style="font-size:12px;line-height:1.6">행사 모집 시 및 현장에서 참가자에게 <strong>촬영·홍보 활용 동의</strong>를 받겠습니다. <span class="req-mark">*</span></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 사이니지 상세 -->
+        <div class="cond" id="cs-signage">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+            <span style="font-size:13px;font-weight:700;color:var(--text)">사이니지</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>송출 희망일 7일 전 공유</span>
+          </div>
+          <div class="field">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+              <label style="margin-bottom:0">송출 희망일</label>
+              <span style="display:flex;gap:8px">
+                <button type="button" id="fv-signage-tab-date" onclick="setDateMode('fv-signage','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+                <button type="button" id="fv-signage-tab-text" onclick="setDateMode('fv-signage','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+              </span>
+            </div>
+            <div id="fv-signage-date-mode" style="display:flex;align-items:center;gap:6px">
+              <input id="fv-signage-from" type="date" style="flex:1">
+              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+              <input id="fv-signage-to" type="date" style="flex:1">
+            </div>
+            <div id="fv-signage-text-mode" style="display:none">
+              <input id="fv-signage-text" type="text" placeholder="예: 11월 중">
+            </div>
+          </div>
+          <div class="field"><label>목적</label><input id="fv-signage-purpose" placeholder="예: 행사 홍보, 브랜드 인지도 제고"></div>
+          <div class="field"><label>희망 위치</label><input id="fv-signage-location" placeholder="예: 마포 1층 로비, 선릉 엘리베이터 앞"></div>
+          <div class="field">
+            <label>콘텐츠 시안 또는 원본</label>
+            <div style="display:grid;grid-template-columns:1fr 120px;gap:4px;margin-bottom:4px">
+              <span style="font-size:11px;color:var(--text-3)">링크</span>
+              <span style="font-size:11px;color:var(--text-3)">설명</span>
+            </div>
+            <div id="fv-signage-asset-list" style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="text" placeholder="https://drive.google.com/…" style="flex:1" class="doc-url">
+                <input type="text" placeholder="예: 시안 v1" style="width:120px;flex-shrink:0" class="doc-label">
+                <button type="button" onclick="addSignageField('fv-signage-asset-list')" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--accent)">+</button>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--accent);margin-top:7px;line-height:1.8;background:var(--accent-bg);border-radius:var(--r);padding:7px 10px">
+              <span style="color:var(--accent)">※</span> 홍보마케팅팀(prmarketing@dcamp.kr)에 <strong>댓글 권한</strong> 이상을 부여해주세요 (열람 및 대행사 권한 부여용)<br>
+              <span style="color:var(--accent)">※</span> 공유된 자료는 업무 목적에 따라 마케팅 대행사 등 외부 협력사에 공유될 수 있습니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- 언론홍보 상세 -->
+        <div class="cond" id="cs-pr">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px;margin-bottom:14px">
+            <span style="font-size:13px;font-weight:700;color:var(--text)">언론홍보</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>배포·초청 희망일 1개월 전 공유</span>
+          </div>
+          <div class="field">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+              <label style="margin-bottom:0">배포·초청 희망일</label>
+              <span style="display:flex;gap:8px">
+                <button type="button" id="fv-pr-tab-date" onclick="setDateMode('fv-pr','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+                <button type="button" id="fv-pr-tab-text" onclick="setDateMode('fv-pr','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+              </span>
+            </div>
+            <div id="fv-pr-date-mode" style="display:flex;align-items:center;gap:6px">
+              <input id="fv-pr-from" type="date" style="flex:1">
+            </div>
+            <div id="fv-pr-text-mode" style="display:none">
+              <input id="fv-pr-text" type="text" placeholder="예: 10월 중 / 미정">
+            </div>
+          </div>
+          <div class="field"><label>주요 내용</label><textarea id="fv-pr-body" placeholder="예: 배치 8기 출범 소식&#10;예: 패밀리 VC 밋업 개최"></textarea></div>
+          <div class="field"><label>언론홍보 관련 참고사항</label><textarea id="fv-pr-note" placeholder="예: 특정 매체 우선 배포 희망placeholder="예: 특정 매체 우선 배포 희망&#10;예: 인터뷰 포함 요청"#10;예: 인터뷰 포함 요청placeholder="예: 특정 매체 우선 배포 희망&#10;예: 인터뷰 포함 요청"#10;예: 매체 현장 초청"></textarea></div>
+        </div>
+
+        <!-- 사진촬영 상세 -->
+        <div class="cond" id="cs-photo">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+            <span style="font-size:13px;font-weight:700;color:var(--text)">사진촬영</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>촬영일 2주 전 공유</span>
+          </div>
+          <div class="field">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+              <label style="margin-bottom:0">촬영 일시</label>
+              <span style="display:flex;gap:8px">
+                <button type="button" id="fv-photo-tab-date" onclick="setDateMode('fv-photo','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+                <button type="button" id="fv-photo-tab-text" onclick="setDateMode('fv-photo','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+              </span>
+            </div>
+            <div id="fv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
+              <input id="fv-photo-from" type="datetime-local" style="flex:1;font-size:12px">
+              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+              <input id="fv-photo-to" type="datetime-local" style="flex:1;font-size:12px">
+            </div>
+            <div id="fv-photo-text-mode" style="display:none">
+              <input id="fv-photo-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
+            </div>
+          </div>
+          <div class="field"><label>촬영 장소</label><input id="fv-photo-where" placeholder="예: 마포 4층"></div>
+          <div class="field">
+            <label>촬영 관련 참고사항</label>
+            <textarea id="fv-photo-note" placeholder="예: 행사 현장 스케치 위주&#10;단체 사진 필수 포함&#10;활동적이고 밝은 분위기로"></textarea>
+          </div>
+          <div style="background:#EEF0FD;border-radius:var(--r);padding:10px 12px;margin-top:4px">
+            <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin-bottom:0;font-weight:400;color:var(--text-2)">
+              <input type="checkbox" id="fv-photo-consent" style="margin-top:2px;flex-shrink:0;accent-color:var(--accent)">
+              <span style="font-size:12px;line-height:1.6">행사 모집 시 및 현장에서 참가자에게 <strong>촬영·홍보 활용 동의</strong>를 받겠습니다. <span class="req-mark">*</span></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+        <button class="btn btn-secondary" onclick="showPage('list')">취소</button>
+        <button class="btn btn-primary" onclick="submitProg()"><i class="ti ti-send"></i>등록하기</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- CHANGE REASON MODAL -->
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-bg" id="modal-delete">
+  <div class="modal" style="width:360px">
+    <div class="modal-head"><h3 id="delete-title">삭제 확인</h3><button class="btn btn-ghost" onclick="closeModal('modal-delete')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-2);line-height:1.7" id="delete-desc"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-delete')">취소</button>
+      <button class="btn btn-sm" style="background:var(--danger);color:#fff;border:none;border-radius:var(--r);padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;display:inline-flex;align-items:center;gap:5px" onclick="execDelete()"><i class="ti ti-trash"></i>삭제</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-reason">
+  <div class="modal" style="width:400px">
+    <div class="modal-head">
+      <h3>변경 이유</h3>
+      <button class="btn btn-ghost" onclick="cancelReason()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:12px" id="reason-desc"></div>
+      <div class="field" style="margin-bottom:0">
+        <label style="font-size:12px;font-weight:500">변경 사유 <span style="font-size:11px;color:var(--text-3);font-weight:400">— 생략 가능</span></label>
+        <input type="text" id="reason-custom" placeholder="예: 파트너사 요청으로 일정 변경" style="font-size:13px" onkeydown="if(event.key==='Enter')confirmReason()">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="cancelReason()">취소</button>
+      <button class="btn btn-primary" onclick="confirmReason()"><i class="ti ti-check"></i>저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD REQUEST MODAL -->
+<div class="modal-bg" id="modal-add-req">
+  <div class="modal">
+    <div class="modal-head"><h3>요청 추가</h3><button class="btn btn-ghost" onclick="closeModal('modal-add-req')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px">진행 유형 <span class="req-mark">*</span></div>
+        <div class="type-grid" style="grid-template-columns:1fr 1fr">
+          <div class="tc" onclick="toggleMT('pr')" id="mtc-pr">
+            <i class="ti ti-news"></i>
+            <div><div class="tc-name">언론홍보</div><div class="tc-desc">보도자료 배포, 현장취재(기자초청), 기획 기사 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleMT('recruit')" id="mtc-recruit">
+            <i class="ti ti-speakerphone"></i>
+            <div><div class="tc-name">모집</div><div class="tc-desc">공고 업로드, 커뮤니티 게재, 유료 광고 집행 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleMT('content')" id="mtc-content">
+            <i class="ti ti-file-text"></i>
+            <div><div class="tc-name">콘텐츠</div><div class="tc-desc">홈페이지, SNS, 뉴스레터 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleMT('video')" id="mtc-video">
+            <i class="ti ti-video"></i>
+            <div><div class="tc-name">현장 스케치 영상</div><div class="tc-desc">행사 현장 촬영 및 편집</div></div>
+          </div>
+          <div class="tc" onclick="toggleMT('photo')" id="mtc-photo">
+            <i class="ti ti-camera"></i>
+            <div><div class="tc-name">사진촬영</div><div class="tc-desc">행사 스케치 등</div></div>
+          </div>
+          <div class="tc" onclick="toggleMT('signage')" id="mtc-signage">
+            <i class="ti ti-device-tv"></i>
+            <div><div class="tc-name">사이니지</div><div class="tc-desc">디지털 사이니지 송출</div></div>
+          </div>
+        </div>
+        <div id="mtype-err" style="display:none;font-size:11px;color:var(--danger);margin-top:6px">유형을 선택해주세요.</div>
+      </div>
+      <div class="cond" id="mcs-recruit">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">모집</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>집행 희망일 10일 전 공유</span>
+        </div>
+        <div style="font-size:11px;color:var(--accent);margin-bottom:14px;line-height:1.8;background:var(--accent-bg);border-radius:var(--r);padding:7px 10px">
+          <span style="color:var(--accent)">※</span> 공고 업로드, 커뮤니티 게재, 유료 광고 집행 등을 포함한 마케팅 기획안을 전달드립니다.
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <label style="margin-bottom:0">모집 기간</label>
+            <span style="display:flex;gap:8px">
+              <button type="button" id="mv-recruit-tab-date" onclick="setDateMode('mv-recruit','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+              <button type="button" id="mv-recruit-tab-text" onclick="setDateMode('mv-recruit','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+            </span>
+          </div>
+          <div id="mv-recruit-date-mode" style="display:flex;align-items:center;gap:6px">
+            <input id="mv-recruit-from" type="date" style="flex:1">
+            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+            <input id="mv-recruit-to" type="date" style="flex:1">
+          </div>
+          <div id="mv-recruit-text-mode" style="display:none">
+            <input id="mv-recruit-text" type="text" placeholder="예: 10월 중 / 미정">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>모집 목표 <span class="hint">(KPI)</span></label><input id="mv-goal" placeholder="예: 90명"></div>
+          <div class="field"><label>모집 링크 <span class="hint">모집 3일 전 공유</span></label><input id="mv-link" placeholder="https://dcamp.kr/…"></div>
+        </div>
+        <div class="field"><label>모집 관련 참고사항</label><textarea id="mv-camp-note" placeholder="예: 인지도 제고에 집중해주세요&#10;예: 타깃 모집에 집중해주세요"></textarea></div>
+      </div>
+      <div class="cond" id="mcs-content">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">콘텐츠</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>게재 희망일 최소 7일 전 공유 (콘텐츠 유형에 따라 상이)</span>
+        </div>
+        <div class="field">
+          <label>희망 채널 <span class="hint">복수 선택</span></label>
+          <div class="ch-grid" id="modal-ch-pills">
+            <label class="ch-label"><input type="checkbox" value="홈페이지" onchange="toggleChLabel(this)">홈페이지</label>
+            <label class="ch-label"><input type="checkbox" value="링크드인" onchange="toggleChLabel(this)">링크드인</label>
+            <label class="ch-label"><input type="checkbox" value="인스타그램" onchange="toggleChLabel(this)">인스타그램</label>
+            <label class="ch-label"><input type="checkbox" value="페이스북" onchange="toggleChLabel(this)">페이스북</label>
+            <label class="ch-label"><input type="checkbox" value="유튜브 (현장스케치 외)" onchange="toggleChLabel(this)">유튜브 (현장스케치 외)</label>
+            <label class="ch-label"><input type="checkbox" value="뉴스레터" onchange="toggleChLabel(this)">뉴스레터</label>
+          </div>
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <label style="margin-bottom:0">게재 희망일</label>
+            <span style="display:flex;gap:8px">
+              <button type="button" id="mv-cont-tab-date" onclick="setDateMode('mv-cont','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+              <button type="button" id="mv-cont-tab-text" onclick="setDateMode('mv-cont','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+            </span>
+          </div>
+          <div id="mv-cont-date-mode" style="display:flex;align-items:center;gap:6px">
+            <input id="mv-cont-from" type="date" style="flex:1">
+          </div>
+          <div id="mv-cont-text-mode" style="display:none">
+            <input id="mv-cont-text" type="text" placeholder="예: 모집 시작일 / 10월 중">
+          </div>
+        </div>
+        <div class="field"><label>주요 내용</label><textarea id="mv-cont-body" placeholder="예: 배치 7기 합격 기업 인터뷰&#10;예: 오피스아워 멘토 라인업 소개"></textarea></div>
+        <div class="field"><label>콘텐츠 관련 참고사항</label><textarea id="mv-cont-desc" placeholder="예: 유니콘 기업으로 성장한 패밀리사와의 협력이 잘 드러나게 작성해주세요"></textarea></div>
+      </div>
+      <div class="cond" id="mcs-video">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">현장 스케치 영상</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>촬영일 2주 전 공유</span>
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <label style="margin-bottom:0">촬영 일시</label>
+            <span style="display:flex;gap:8px">
+              <button type="button" id="mv-video-tab-date" onclick="setDateMode('mv-video','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+              <button type="button" id="mv-video-tab-text" onclick="setDateMode('mv-video','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+            </span>
+          </div>
+          <div id="mv-video-date-mode" style="display:flex;align-items:center;gap:6px">
+            <input id="mv-video-from" type="datetime-local" style="flex:1;font-size:12px">
+            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+            <input id="mv-video-to" type="datetime-local" style="flex:1;font-size:12px">
+          </div>
+          <div id="mv-video-text-mode" style="display:none">
+            <input id="mv-video-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
+          </div>
+        </div>
+        <div class="field"><label>촬영 장소</label><input id="mv-video-where" placeholder="예: 마포 4층"></div>
+        <div class="field"><label>촬영 관련 참고사항</label><textarea id="mv-video-note" placeholder="예: 참가자 인터뷰 포함&#10;밝고 활동적인 분위기로 편집"></textarea></div>
+        <div style="background:#EEF0FD;border-radius:var(--r);padding:10px 12px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin-bottom:0;font-weight:400;color:var(--text-2)">
+            <input type="checkbox" id="mv-video-consent" style="margin-top:2px;flex-shrink:0;accent-color:var(--accent)">
+            <span style="font-size:12px;line-height:1.6">행사 모집 시 및 현장에서 참가자에게 <strong>촬영·홍보 활용 동의</strong>를 받겠습니다. <span class="req-mark">*</span></span>
+          </label>
+        </div>
+      </div>
+      <div class="cond" id="mcs-signage">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">사이니지</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>송출 희망일 7일 전 공유</span>
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <label style="margin-bottom:0">송출 희망일</label>
+            <span style="display:flex;gap:8px">
+              <button type="button" id="mv-signage-tab-date" onclick="setDateMode('mv-signage','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+              <button type="button" id="mv-signage-tab-text" onclick="setDateMode('mv-signage','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+            </span>
+          </div>
+          <div id="mv-signage-date-mode" style="display:flex;align-items:center;gap:6px">
+            <input id="mv-signage-from" type="date" style="flex:1">
+            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+            <input id="mv-signage-to" type="date" style="flex:1">
+          </div>
+          <div id="mv-signage-text-mode" style="display:none">
+            <input id="mv-signage-text" type="text" placeholder="예: 11월 중">
+          </div>
+        </div>
+        <div class="field"><label>목적</label><input id="mv-signage-purpose" placeholder="예: 행사 홍보, 브랜드 인지도 제고"></div>
+        <div class="field"><label>희망 위치</label><input id="mv-signage-location" placeholder="예: 마포 1층 로비, 선릉 엘리베이터 앞"></div>
+        <div class="field">
+          <label>콘텐츠 시안 또는 원본</label>
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:4px;margin-bottom:4px">
+            <span style="font-size:11px;color:var(--text-3)">링크</span>
+            <span style="font-size:11px;color:var(--text-3)">설명</span>
+          </div>
+          <div id="mv-signage-asset-list" style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="text" placeholder="https://drive.google.com/…" style="flex:1" class="doc-url">
+              <input type="text" placeholder="예: 시안 v1" style="width:120px;flex-shrink:0" class="doc-label">
+              <button type="button" onclick="addSignageField('mv-signage-asset-list')" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--accent)">+</button>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--accent);margin-top:7px;line-height:1.8;background:var(--accent-bg);border-radius:var(--r);padding:7px 10px">
+            <span style="color:var(--accent)">※</span> 홍보마케팅팀(prmarketing@dcamp.kr)에 <strong>댓글 권한</strong> 이상을 부여해주세요 (열람 및 대행사 권한 부여용)<br>
+            <span style="color:var(--accent)">※</span> 공유된 자료는 업무 목적에 따라 마케팅 대행사 등 외부 협력사에 공유될 수 있습니다.
+          </div>
+        </div>
+      </div>
+      <div class="cond" id="mcs-pr">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px;margin-bottom:14px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">언론홍보</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>배포·초청 희망일 1개월 전 공유</span>
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <label style="margin-bottom:0">배포·초청 희망일</label>
+            <span style="display:flex;gap:8px">
+              <button type="button" id="mv-pr-tab-date" onclick="setDateMode('mv-pr','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+              <button type="button" id="mv-pr-tab-text" onclick="setDateMode('mv-pr','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+            </span>
+          </div>
+          <div id="mv-pr-date-mode" style="display:flex;align-items:center;gap:6px">
+            <input id="mv-pr-from" type="date" style="flex:1">
+          </div>
+          <div id="mv-pr-text-mode" style="display:none">
+            <input id="mv-pr-text" type="text" placeholder="예: 10월 중 / 미정">
+          </div>
+        </div>
+        <div class="field"><label>주요 내용</label><textarea id="mv-pr-body" placeholder="예: 배치 8기 출범 소식"></textarea></div>
+        <div class="field"><label>언론홍보 관련 참고사항</label><textarea id="mv-pr-note" placeholder="예: 특정 매체 우선 배포 희망placeholder="예: 특정 매체 우선 배포 희망"#10;예: 인터뷰 포함 요청placeholder="예: 특정 매체 우선 배포 희망"#10;예: 매체 현장 초청"></textarea></div>
+      </div>
+      <div class="cond" id="mcs-photo">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 12px;background:var(--bg);border-radius:var(--r);margin-top:4px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">사진촬영</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;background:#EEF0FD;border-radius:20px;padding:3px 9px;font-size:11px;color:#4338CA"><i class="ti ti-clock" style="font-size:11px"></i>촬영일 2주 전 공유</span>
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <label style="margin-bottom:0">촬영 일시</label>
+            <span style="display:flex;gap:8px">
+              <button type="button" id="mv-photo-tab-date" onclick="setDateMode('mv-photo','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+              <button type="button" id="mv-photo-tab-text" onclick="setDateMode('mv-photo','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+            </span>
+          </div>
+          <div id="mv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
+            <input id="mv-photo-from" type="datetime-local" style="flex:1;font-size:12px">
+            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+            <input id="mv-photo-to" type="datetime-local" style="flex:1;font-size:12px">
+          </div>
+          <div id="mv-photo-text-mode" style="display:none">
+            <input id="mv-photo-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
+          </div>
+        </div>
+        <div class="field"><label>촬영 장소</label><input id="mv-photo-where" placeholder="예: 마포 4층"></div>
+        <div class="field"><label>촬영 관련 참고사항</label><textarea id="mv-photo-note" placeholder="예: 행사 현장 스케치 위주&#10;단체 사진 필수 포함"></textarea></div>
+        <div style="background:#EEF0FD;border-radius:var(--r);padding:10px 12px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin-bottom:0;font-weight:400;color:var(--text-2)">
+            <input type="checkbox" id="mv-photo-consent" style="margin-top:2px;flex-shrink:0;accent-color:var(--accent)">
+            <span style="font-size:12px;line-height:1.6">행사 모집 시 및 현장에서 참가자에게 <strong>촬영·홍보 활용 동의</strong>를 받겠습니다. <span class="req-mark">*</span></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-req')">취소</button>
+      <button class="btn btn-primary" onclick="submitAddReq()"><i class="ti ti-plus"></i>추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOKEN MODAL -->
+<div class="modal-bg" id="modal-token" style="z-index:9999">
+  <div class="modal" style="width:360px">
+    <div class="modal-head"><h3>🔐 접속 코드 입력</h3></div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:10px">관리자에게 받은 접속 코드를 입력해주세요.</div>
+      <div style="font-size:11px;color:#92400E;background:#FEF3C7;border-radius:var(--r);padding:8px 10px;margin-bottom:14px;line-height:1.6">
+        ⚠️ 접속 코드는 이 브라우저에 저장됩니다. <strong>공용 PC나 공유 기기에서는 사용하지 마세요.</strong>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>접속 코드</label>
+        <input type="password" id="token-input" placeholder="접속 코드 입력" style="font-size:13px"
+          onkeydown="if(event.key==='Enter')submitToken()">
+        <div id="token-err" style="display:none;font-size:11px;color:var(--danger);margin-top:5px">접속 코드가 올바르지 않아요.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" onclick="submitToken()" style="width:100%"><i class="ti ti-login"></i>접속</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAME MODAL -->
+<div class="modal-bg" id="modal-name">
+  <div class="modal" style="width:360px">
+    <div class="modal-head">
+      <h3>내 정보 설정</h3>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>소속팀</label>
+        <select id="name-team" style="font-size:13px">
+          <option value="">선택</option>
+          <optgroup label="사업실">
+            <option>biz ops</option>
+            <option>growth</option>
+            <option>space</option>
+            <option>resource</option>
+          </optgroup>
+          <optgroup label="글로벌사업실">
+            <option>글로벌사업팀</option>
+          </optgroup>
+          <optgroup label="투자실">
+            <option>펀드팀</option>
+            <option>투자팀</option>
+            <option>투자전략팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부 · 기획실">
+            <option>전략팀</option>
+            <option>IT팀</option>
+            <option>홍보마케팅팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부 · 인사실">
+            <option>인사팀</option>
+          </optgroup>
+          <optgroup label="경영지원본부">
+            <option>재무팀</option>
+          </optgroup>
+          <option>기타</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>이름</label>
+        <input type="text" id="name-input" placeholder="예: 홍길동" style="font-size:13px"
+          onkeydown="if(event.key==='Enter')saveName()">
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px;line-height:1.6">같은 브라우저에서는 자동으로 인식돼요. 사이드바 하단 <strong>변경</strong> 버튼으로 언제든 수정할 수 있어요.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" onclick="saveName()" style="width:100%"><i class="ti ti-check"></i>저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+let db = null; // 사용 안 함 (호환성 유지)
+const API_URL = '/api/gs';
+let API_TOKEN = '';
+
+async function apiGet(params){
+  const q=new URLSearchParams({...params, token:API_TOKEN});
+  const res=await fetch(`${API_URL}?${q}`);
+  return res.json();
+}
+async function apiPost(data){
+  const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({...data,token:API_TOKEN})});
+  return res.json();
+}
+let progs = []; // [{id, team, person, name, target, benefit, event, doc, note, reqs:[], changelog:[], createdAt}]
+let curProgId = null;
+let curFilter = 'active';
+let curTypeFilter = 'all';
+let curTeam = '';
+let curSort = 'createdAt';
+let curSortDir = 'desc'; // 'asc' | 'desc'
+let selTypes = new Set();
+let selMTypes = new Set();
+
+const STATUSES = [
+  {v:'a',l:'등록 완료',c:'s-a'},
+  {v:'b',l:'협의 중',c:'s-b'},
+  {v:'b2',l:'협의 완료',c:'s-b2'},
+  {v:'c',l:'작업 중',c:'s-c'},
+  {v:'d',l:'작업 완료',c:'s-d'},
+  {v:'e',l:'보류/취소',c:'s-e'},
+];
+const PROG_FIELDS = [
+  {key:'team',    label:'담당팀'},
+  {key:'person',  label:'담당자'},
+  {key:'target',  label:'주요 타깃',   multi:false},
+  {key:'benefit', label:'특징', multi:true},
+  {key:'event',   label:'행사 일정',    multi:false},
+  {key:'doc',     label:'관련 자료',    multi:true},
+];
+const REQ_LABELS = {pr:'언론홍보', recruit:'모집', content:'콘텐츠', video:'현장 스케치 영상', photo:'사진촬영', signage:'사이니지'};
+const REQ_FIELDS = {
+  recruit:  [{key:'recruit',label:'모집 기간',type:'daterange'},{key:'goal',label:'모집 목표'},{key:'link',label:'모집 링크'},{key:'camp_note',label:'모집 관련 참고사항',multi:true}],
+  content:  [{key:'channels',label:'희망 채널',type:'channels'},{key:'cont_date',label:'게재 희망일',type:'date'},{key:'cont_body',label:'주요 내용',multi:true},{key:'cont_desc',label:'콘텐츠 관련 참고사항',multi:true}],
+  video:    [{key:'video_when',label:'촬영 일시',type:'datetimerange'},{key:'video_where',label:'촬영 장소'},{key:'video_note',label:'촬영 관련 참고사항',multi:true}],
+  photo:    [{key:'photo_when',label:'촬영 일시',type:'datetimerange'},{key:'photo_where',label:'촬영 장소'},{key:'photo_note',label:'촬영 관련 참고사항',multi:true}],
+  pr:       [{key:'pr_date',label:'배포·초청 희망일',type:'date'},{key:'pr_body',label:'주요 내용',multi:true},{key:'pr_note',label:'언론홍보 관련 참고사항',multi:true}],
+  signage:  [{key:'signage_date',label:'송출 희망일',type:'daterange'},{key:'signage_purpose',label:'목적'},{key:'signage_location',label:'희망 위치'},{key:'signage_asset',label:'콘텐츠 시안 또는 원본'}],
+};
+
+function sv(id){return(document.getElementById(id)||{}).value||''}
+function fmtDate(val){
+  if(!val)return val;
+  // ISO 날짜 변환 (2026-10-06T15:00:00.000Z → 2026-10-07)
+  try{
+    if(/^\d{4}-\d{2}-\d{2}T/.test(val)){
+      const d=new Date(val);
+      return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+  }catch{}
+  return val;
+}
+function renderDocVal(val,key){
+  if(key!=='doc')return fmtDate(val).replace(/\n/g,'<br>');
+  return val.split('\n').map(line=>{
+    const t=line.trim();
+    if(!t)return'';
+    // [설명] url 형식 파싱
+    const m=t.match(/^\[(.+?)\]\s*(https?:\/\/.+)$/);
+    if(m){
+      return`<a href="${m[2]}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px;margin-bottom:2px" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+        <i class="ti ti-link" style="font-size:11px;flex-shrink:0"></i>
+        <span style="font-weight:600">${m[1]}</span>
+        <span style="color:var(--text-3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m[2]}</span>
+      </a>`;
+    }
+    const isUrl=/^https?:\/\//.test(t);
+    return isUrl
+      ?`<a href="${t}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:block;font-size:12px;word-break:break-all;margin-bottom:2px">${t}</a>`
+      :`<span style="font-size:12px">${t}</span>`;
+  }).join('');
+}
+// ── DATE COMPONENT ────────────────────────────────────
+function setDateMode(prefix, mode){
+  const dm=document.getElementById(prefix+'-date-mode');
+  const tm=document.getElementById(prefix+'-text-mode');
+  const tbD=document.getElementById(prefix+'-tab-date');
+  const tbT=document.getElementById(prefix+'-tab-text');
+  const isDate=mode==='date';
+  if(dm)dm.style.display=isDate?'flex':'none';
+  if(tm)tm.style.display=isDate?'none':'block';
+  if(tbD){tbD.style.color=isDate?'var(--accent)':'var(--text-3)';tbD.style.fontWeight=isDate?'600':'400';}
+  if(tbT){tbT.style.color=isDate?'var(--text-3)':'var(--accent)';tbT.style.fontWeight=isDate?'400':'600';}
+  if(isDate){const el=document.getElementById(prefix+'-text');if(el)el.value='';}
+  else{const f=document.getElementById(prefix+'-from'),t=document.getElementById(prefix+'-to');if(f)f.value='';if(t)t.value='';}
+}
+function getDateVal(prefix, hasRange, hasTime){
+  const dm=document.getElementById(prefix+'-date-mode');
+  const isDateMode=!dm||dm.style.display!=='none';
+  if(isDateMode){
+    const fmt=v=>{if(!v)return'';return hasTime?v.replace('T',' ').slice(0,16):v;};
+    const f=fmt(sv(prefix+'-from'));
+    const toEl=document.getElementById(prefix+'-to');
+    const t=toEl?fmt(toEl.value):'';
+    if(hasRange||toEl){
+      if(f&&t)return f+' ~ '+t;
+      return f||t;
+    }
+    return f;
+  }
+  return sv(prefix+'-text');
+}
+function makeDateField(prefix, hasRange, hasTime, labels){
+  const fromLabel=labels||'시작일', toLabel='종료일';
+  const inputType=hasTime?'datetime-local':'date';
+  return`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+      <span style="font-size:11px;display:flex;gap:8px">
+        <button type="button" id="${prefix}-tab-date" onclick="setDateMode('${prefix}','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--accent);font-weight:600;padding:0">날짜로 입력</button>
+        <button type="button" id="${prefix}-tab-text" onclick="setDateMode('${prefix}','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
+      </span>
+    </div>
+    <div id="${prefix}-date-mode" style="display:flex;align-items:center;gap:6px">
+      <input id="${prefix}-from" type="${inputType}" style="flex:1;font-size:12px">
+      ${hasRange?`<span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span><input id="${prefix}-to" type="${inputType}" style="flex:1;font-size:12px">`:''}
+    </div>
+    <div id="${prefix}-text-mode" style="display:none">
+      <input id="${prefix}-text" type="text" placeholder="${hasTime?'예: 2026-11-20 14:00':'예: 10월 중 / 미정'}">
+    </div>`;
+}
+
+function setEventMode(mode){
+  const isDate=mode==='date';
+  document.getElementById('event-date-mode').style.display=isDate?'flex':'none';
+  document.getElementById('event-text-mode').style.display=isDate?'none':'block';
+  const tabDate=document.getElementById('event-tab-date');
+  const tabText=document.getElementById('event-tab-text');
+  tabDate.style.color=isDate?'var(--accent)':'var(--text-3)';
+  tabDate.style.fontWeight=isDate?'600':'400';
+  tabText.style.color=isDate?'var(--text-3)':'var(--accent)';
+  tabText.style.fontWeight=isDate?'400':'600';
+  if(isDate)document.getElementById('fv-event-text').value='';
+  else{document.getElementById('fv-event-from').value='';document.getElementById('fv-event-to').value='';}
+}
+function getEventVal(){
+  const dm=document.getElementById('event-date-mode');
+  if(dm&&dm.style.display!=='none'){
+    const fmt=v=>v?v.replace('T',' ').slice(0,16):'';
+    const f=fmt(sv('fv-event-from')),t=fmt(sv('fv-event-to'));
+    if(f&&t)return f+' ~ '+t;
+    return f||t;
+  }
+  return sv('fv-event-text');
+}
+function addSignageField(listId){
+  const list=document.getElementById(listId);
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:6px;align-items:center';
+  row.innerHTML=`<input type="text" placeholder="https://drive.google.com/…" style="flex:1" class="doc-url">
+    <input type="text" placeholder="예: 시안 v1" style="width:120px;flex-shrink:0" class="doc-label">
+    <button type="button" onclick="this.closest('div').remove()" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-3)">×</button>`;
+  list.appendChild(row);
+  row.querySelector('input').focus();
+}
+function getSignageAsset(listId){
+  const list=document.getElementById(listId);
+  if(!list)return'';
+  return[...list.querySelectorAll('div')].map(row=>{
+    const url=(row.querySelector('.doc-url')||{}).value?.trim()||'';
+    const label=(row.querySelector('.doc-label')||{}).value?.trim()||'';
+    if(!url)return'';
+    return label?`[${label}] ${url}`:url;
+  }).filter(Boolean).join('\n');
+}
+function addDocField(){
+  const list=document.getElementById('fv-doc-list');
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:6px;align-items:center';
+  row.innerHTML=`<input type="text" placeholder="https://drive.google.com/…" style="flex:1" class="doc-url">
+    <input type="text" placeholder="예: 계획안" style="width:120px;flex-shrink:0" class="doc-label">
+    <button type="button" onclick="this.closest('div').remove()" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-3)">×</button>`;
+  list.appendChild(row);
+  row.querySelector('input').focus();
+}
+function getDocLinks(){
+  const list=document.getElementById('fv-doc-list');
+  if(!list)return'';
+  return[...list.querySelectorAll('div')].map(row=>{
+    const url=(row.querySelector('.doc-url')||{}).value?.trim()||'';
+    const label=(row.querySelector('.doc-label')||{}).value?.trim()||'';
+    if(!url)return'';
+    return label?`[${label}] ${url}`:url;
+  }).filter(Boolean).join('\n');
+}
+function pills(wrap){return[...(wrap?wrap.querySelectorAll('input[type=checkbox]:checked'):[])].map(c=>c.value).join(', ')}
+function toggleChLabel(cb){cb.closest('.ch-label').classList.toggle('checked',cb.checked)}
+function stOf(v){return STATUSES.find(s=>s.v===v)||STATUSES[0]}
+function rtime(ts){
+  const d=(Date.now()-ts)/1000;
+  if(d<60)return'방금 전';
+  if(d<3600)return Math.floor(d/60)+'분 전';
+  if(d<86400)return Math.floor(d/3600)+'시간 전';
+  const days=Math.floor(d/86400);
+  return days===1?'어제':days+'일 전';
+}
+function uid(){return Math.random().toString(36).slice(2,10)}
+
+// ── TOKEN ─────────────────────────────────────────────
+const VALID_TOKENS = {
+  'dcamp2026': 'write',
+  'dcamp-view': 'read'
+};
+let userPerm = ''; // 'write' | 'read'
+
+function getStoredToken(){
+  try{return sessionStorage.getItem('dcamp_token')||'';}catch{return '';}
+}
+function saveTokenToStorage(token){
+  try{sessionStorage.setItem('dcamp_token', token);}catch{}
+  // db 캐퍼빌리티에도 저장 (클로드 아티팩트 환경)
+  try{if(window.storage)window.storage.set('dcamp_token', token);}catch{}
+}
+function applyToken(token){
+  const perm = VALID_TOKENS[token];
+  if(!perm) return false;
+  API_TOKEN = token;
+  userPerm = perm;
+  saveTokenToStorage(token);
+  if(perm === 'read'){
+    document.querySelectorAll('.btn-primary, .add-req-btn, #nav-new-prog').forEach(el=>{
+      if(!el.id?.includes('comment') && !el.id?.includes('memo'))
+        el.style.display='none';
+    });
+  }
+  return true;
+}
+async function getStoredTokenAsync(){
+  // localStorage 먼저 (실제 서버 환경)
+  const local = getStoredToken();
+  if(local) return local;
+  // window.storage (클로드 아티팩트 환경) 시도
+  try{
+    if(typeof window.storage !== 'undefined'){
+      const r = await window.storage.get('dcamp_token');
+      if(r?.value) return r.value;
+    }
+  }catch{}
+  return '';
+}
+async function submitToken(){
+  const val = document.getElementById('token-input').value.trim();
+  const ok = applyToken(val);
+  if(!ok){
+    document.getElementById('token-err').style.display='block';
+    return;
+  }
+  document.getElementById('modal-token').classList.remove('on');
+  await initDB();
+}
+function logout(){
+  try{sessionStorage.removeItem('dcamp_token');}catch{}
+  API_TOKEN='';
+  userPerm='';
+  location.reload();
+}
+function initToken(){
+  let stored = '';
+  try{stored = sessionStorage.getItem('dcamp_token')||'';}catch{}
+  if(stored && applyToken(stored)) return true;
+  document.getElementById('modal-token').classList.add('on');
+  setTimeout(()=>document.getElementById('token-input').focus(), 100);
+  return false;
+}
+
+// ── USERNAME ──────────────────────────────────────────
+function getCurrentUser(){
+  try{return localStorage.getItem('dcamp_username')||'';}catch{return '';}
+}
+function getCurrentTeam(){
+  try{return localStorage.getItem('dcamp_userteam')||'';}catch{return '';}
+}
+function openNameModal(){
+  document.getElementById('name-input').value=getCurrentUser();
+  document.getElementById('name-team').value=getCurrentTeam();
+  document.getElementById('modal-name').classList.add('on');
+  setTimeout(()=>document.getElementById('name-input').focus(),100);
+}
+function saveName(){
+  const name=document.getElementById('name-input').value.trim();
+  const team=document.getElementById('name-team').value;
+  if(!name){toast('이름을 입력해주세요.');return;}
+  try{
+    localStorage.setItem('dcamp_username',name);
+    localStorage.setItem('dcamp_userteam',team);
+  }catch{}
+  updateSidebarUser(name,team);
+  document.getElementById('modal-name').classList.remove('on');
+  toast(`${team?team+' ':''}${name}님으로 설정됐어요.`);
+}
+function updateSidebarUser(name,team){
+  const el=document.getElementById('sidebar-username');
+  if(el)el.textContent=team?`${team} ${name}`:name;
+}
+function initUsername(){
+  const name=getCurrentUser();
+  const team=getCurrentTeam();
+  if(name){
+    updateSidebarUser(name,team);
+  } else {
+    openNameModal();
+  }
+}
+function prefillUserInfo(){
+  const name=getCurrentUser(), team=getCurrentTeam();
+  if(team){const t=document.getElementById('fv-team');if(t)t.value=team;}
+  if(name){const p=document.getElementById('fv-person');if(p)p.value=name;}
+}
+
+// ── DB ────────────────────────────────────────────────
+async function initDB(){
+  try{
+    const data = await apiGet({action:'list'});
+    if(data.error){loadDemo();return;}
+    progs = data.progs||[];
+    progs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    renderAll();
+  }catch(e){loadDemo();}
+}
+
+async function saveNew(data){
+  const id=data.id||uid();
+  const prog={id,...data};
+  progs.unshift(prog);
+  renderAll();
+  try{await apiPost({action:'save_prog',prog});}catch(e){}
+  return id;
+}
+
+async function updateProg(id, patch, logEntry){
+  const p=progs.find(x=>x.id===id);
+  if(!p)return;
+  const cl=[...(p.changelog||[]),logEntry];
+  Object.assign(p,patch,{changelog:cl});
+  renderAll();
+  if(curProgId===id)renderDetail(progs.find(x=>x.id===id));
+  try{await apiPost({action:'update_prog',id,patch:{...patch,changelog:cl},log:logEntry});}catch(e){}
+}
+
+function loadDemo(){
+  const D=86400000, H=3600000;
+  progs=[
+    {id:'p1',team:'resource',person:'배태준',
+     name:'10월 오피스아워 #사업협력',
+     target:'기업별 사업협력 또는 직접투자 수요와 관련된 사업 아이템을 보유한 스타트업',
+     benefit:'에코프로파트너스, HL그룹, 누리하우스(패밀리사), CJ인베스트먼트 참여\nCJ인베스트먼트는 사업협력보다 직접투자 검토 목적 — 홍보에 반드시 반영 필요\n누리하우스는 성장한 패밀리사로서 오피스아워 참여기관이 된 2번째 사례',
+     event:'2026-10-22 ~ 2026-10-28',
+     doc:'https://drive.google.com/drive/u/0/folders/19tRrlE-0om3RQT9wKHXCsPscefIqy3-w',
+     reqs:[
+       {id:'r1',type:'recruit',status:'d',recruit:'2026-09-21 ~ 2026-10-11',goal:'30명',
+        link:'https://dcamp.kr/program/237315\nhttps://dcamp.kr/program/237316\nhttps://dcamp.kr/program/237317',
+        camp_note:'타깃 모집에 집중해주세요'},
+       {id:'r2',type:'content',status:'d',channels:'링크드인, 인스타그램',cont_date:'2026-09-21',
+        cont_body:'10월 오피스아워 참여기관 라인업 소개',
+        cont_desc:'CJ는 직접투자 목적 참여임을 홍보 문구에 반영\n누리하우스가 패밀리사 출신임을 언급해주세요'},
+     ],
+     changelog:[
+       {id:'c1',who:'배태준',what:'프로그램 등록',ts:Date.now()-D*12},
+       {id:'c2',who:'배태준',what:'모집 링크 업데이트',ts:Date.now()-D*10,memo:'에코프로, HL그룹, 누리하우스, CJ인베스트먼트 링크 모두 생성 완료'},
+       {id:'c3',who:'장정윤',what:'모집 요청 → 작업 완료',ts:Date.now()-D*8},
+       {id:'c4',who:'장정윤',what:'콘텐츠 요청 → 작업 완료',ts:Date.now()-D*5},
+     ],
+     createdAt:Date.now()-D*12},
+
+    {id:'p2',team:'resource',person:'배태준',
+     name:'10월 오피스아워 #벤처투자',
+     target:'IR점검 및 투자유치를 희망하는 스타트업',
+     benefit:'VC 90개사 이상 참여\n투자 유치 희망 초기~성장 단계 스타트업 대상',
+     event:'2026-10-22 ~ 2026-10-28',
+     doc:'https://drive.google.com/drive/u/0/folders/19tRrlE-0om3RQT9wKHXCsPscefIqy3-w',
+     reqs:[
+       {id:'r3',type:'recruit',status:'d',recruit:'2026-09-21 ~ 2026-10-11',goal:'90명',link:'https://dcamp.kr/program/237048',
+        camp_note:'타깃 모집에 집중해주세요'},
+     ],
+     changelog:[
+       {id:'c5',who:'배태준',what:'프로그램 등록',ts:Date.now()-D*12},
+       {id:'c6',who:'장정윤',what:'모집 요청 → 작업 완료',ts:Date.now()-D*8},
+     ],
+     createdAt:Date.now()-D*12},
+
+    {id:'p3',team:'펀드팀',person:'정지인',
+     name:'2026 패밀리 VC 밋업',
+     target:'디캠프 출자 VC(GP), LP, 배치 기업',
+     benefit:'배치 기업 피칭 및 딜소싱 연계\n출자 펀드 운용사와 협력 강화\n우수 패밀리 VC 포상',
+     event:'2026-10-29',
+     doc:'https://docs.google.com/document/d/1ePofNY5IOLcRatMM1AM1ebf_YjTUFXmCDg89H0BAKh4/edit',
+     reqs:[
+       {id:'r4',type:'content',status:'c',channels:'홈페이지, 링크드인',cont_date:'2026-10-27',
+        cont_body:'패밀리 VC 밋업 개최 소식 및 주요 프로그램 소개',
+        cont_desc:'국내 최대 규모 스타트업-VC 밋업 관점으로 강조\n출자 VC 76개사, 배치 기업 200+ 수치 꼭 포함\n작년과 유사한 톤으로'},
+       {id:'r4b',type:'pr',status:'c',pr_date:'2026-10-31',
+        pr_body:'작년과 유사하게 보도자료 배포'},
+     ],
+     changelog:[
+       {id:'c7',who:'정지인',what:'프로그램 등록',ts:Date.now()-D*2},
+       {id:'c8',who:'장정윤',what:'콘텐츠 요청 → 작업 중',ts:Date.now()-H*3},
+     ],
+     createdAt:Date.now()-D*2},
+
+    {id:'p4',team:'growth',person:'이재영',
+     name:'디캠프 배치 8기 OT',
+     target:'배치 8기 참여기업 및 참여 멘토',
+     benefit:'배치 프로그램 및 재단 홍보 소스로 활용\n멘토 인터뷰 + 스타트업 대표 인터뷰 포함 희망',
+     event:'2026-09-15',
+     doc:'https://app.notion.com/p/8-_-_-3677563d3dc0800fb0fdf3eb24444999?source=copy_link',
+     reqs:[
+       {id:'r5',type:'video',status:'c',video_when:'2026-09-15',video_where:'디캠프 마포 4층 및 5층',
+        video_note:'기존 7기 OT 영상과 유사하게\n멘토 인터뷰 + 참여기업 대표 인터뷰 포함\n행사 스케치 위주'},
+       {id:'r6',type:'photo',status:'c',photo_when:'2026-09-15',photo_where:'디캠프 마포 4층 및 5층',
+        photo_note:'행사 전체 스케치\n단체 사진 필수'},
+     ],
+     changelog:[
+       {id:'c9',who:'이재영',what:'프로그램 등록',ts:Date.now()-D*40},
+       {id:'c10',who:'황영진',what:'영상 요청 → 작업 완료',ts:Date.now()-D*25},
+       {id:'c11',who:'황영진',what:'사진 요청 → 작업 완료',ts:Date.now()-D*25},
+     ],
+     createdAt:Date.now()-D*40},
+
+    {id:'p5',team:'resource',person:'전한슬',
+     name:'스타트업 모닝클럽 2회차',
+     target:'디캠프 패밀리사 창업자',
+     benefit:'스타트업 간 밀도 높은 네트워킹\n연말 마무리 — 한 해 어려움 극복·회복 스토리 주제\n(워크숍 수요조사 듣고 싶은 강연 주제 3위)',
+     event:'2026-12-09 07:00',
+     reqs:[
+       {id:'r7',type:'content',status:'b',channels:'홈페이지, 페이스북, 인스타그램',cont_date:'2026-12-10',
+        cont_body:'모닝클럽 2회차 현장 스케치 및 참여 후기',
+        cont_desc:'주제 특성상 매체 참여 없이 내부 촬영\n현장 스케치(사진·영상) + 리뷰 콘텐츠로 부탁드리고자 합니다.'},
+       {id:'r8',type:'video',status:'b',video_when:'2026-12-09 06:50',video_where:'선릉 4층 라운지',
+        video_note:'현장 스케치 위주\n리뷰 콘텐츠 형태로 편집'},
+       {id:'r9',type:'photo',status:'b',photo_when:'2026-12-09 06:50',photo_where:'선릉 4층 라운지',
+        photo_note:'자연스러운 네트워킹 장면 위주'},
+     ],
+     changelog:[
+       {id:'c12',who:'전한슬',what:'프로그램 등록',ts:Date.now()-D*2},
+     ],
+     createdAt:Date.now()-D*2},
+
+    {id:'p6',team:'글로벌사업팀',person:'김재연',
+     name:'US Forged',
+     target:'Pre-seed ~ Seed 단계 하드테크 스타트업 (로보틱스, 제조업, 하드웨어, 우주, 퀀텀 등)',
+     benefit:'미국 하드테크 액셀러레이터 HAX와 함께 기술사업화 전략 고도화\n미국 시장 진출 및 글로벌 투자 유치 준비 지원',
+     event:'2026-08-10 ~ 2026-09-04',
+     doc:'https://drive.google.com/open?id=1_9pGH980bQbf0ywghGlN9X4SolOpx-JI&usp=drive_fs',
+     reqs:[
+       {id:'r10',type:'recruit',status:'d',recruit:'2026-08-10 ~ 2026-09-04',goal:'45명',link:'https://dcamp.kr/program/237489',
+        camp_note:'글로벌 진출 희망 하드테크 스타트업 타깃 모집에 집중'},
+     ],
+     changelog:[
+       {id:'c13',who:'김재연',what:'프로그램 등록',ts:Date.now()-D*55},
+       {id:'c14',who:'장정윤',what:'모집 요청 → 작업 완료',ts:Date.now()-D*50},
+     ],
+     createdAt:Date.now()-D*55},
+
+    {id:'p7',team:'전략팀',person:'이한별',
+     name:'연차 보고서 연출 사진 촬영',
+     target:'이사회 등 기관 및 업계 유관기관',
+     benefit:'재단 소개 책자 등 약 1년 활용 예정\n다수 인원 활동적·역동적 연출 사진',
+     event:'2026-10월 중',
+     reqs:[
+       {id:'r11',type:'photo',status:'b',photo_when:'',photo_where:'디캠프 선릉 사무공간',
+        photo_note:'업무 수행, 회의, 휴식, 웰니스 공간, 일상 사진 등\n최소 4인 이상 연출 사진\n활동적이고 밝은 분위기'},
+     ],
+     changelog:[
+       {id:'c15',who:'이한별',what:'프로그램 등록',ts:Date.now()-H*5},
+       {id:'c16',who:'황영진',what:'사진 요청 → 협의 중',ts:Date.now()-H*2,memo:'촬영 일정 확정 후 진행 예정. 레퍼런스 아산나눔재단 연차보고서 참고'},
+     ],
+     createdAt:Date.now()-H*5},
+
+    // ── New 시트 추가 데이터 ──
+    {id:'p8',team:'resource',person:'조윤선',
+     name:'8월 오피스아워 #사업협력',
+     target:'기업별 사업협력 수요와 관련된 사업 아이템을 보유한 스타트업',
+     event:'2026-08-24 ~ 2026-08-28',
+     doc:'https://drive.google.com/drive/folders/14P1M8ojSAv_9YxvV4nVoM5iFDW9qAjGk?usp=drive_link',
+     reqs:[
+       {id:'r12',type:'recruit',status:'d',recruit:'2026-07-27 ~ 2026-08-11',goal:'30명',
+        link:'https://dcamp.kr/program/237315\nhttps://dcamp.kr/program/237316\nhttps://dcamp.kr/program/237317'},
+     ],
+     changelog:[{id:'c17',who:'조윤선',what:'프로그램 등록',ts:Date.now()-D*95}],
+     createdAt:Date.now()-D*95},
+
+    {id:'p9',team:'resource',person:'조윤선',
+     name:'8월 오피스아워 #벤처투자',
+     target:'IR점검 및 투자유치를 희망하는 스타트업',
+     event:'2026-08-24 ~ 2026-08-28',
+     doc:'https://drive.google.com/drive/folders/14P1M8ojSAv_9YxvV4nVoM5iFDW9qAjGk?usp=drive_link',
+     reqs:[
+       {id:'r13',type:'recruit',status:'d',recruit:'2026-07-27 ~ 2026-08-11',goal:'90명',
+        link:'https://dcamp.kr/program/237048'},
+     ],
+     changelog:[{id:'c18',who:'조윤선',what:'프로그램 등록',ts:Date.now()-D*95}],
+     createdAt:Date.now()-D*95},
+
+    {id:'p10',team:'글로벌사업팀',person:'전민영',
+     name:'Startup OI Tokyo #Physical AI',
+     target:'Physical AI 기술 보유, 일본 진출 희망 스타트업',
+     benefit:'Fujitsu와의 사업 협업 검토 기회',
+     event:'2026-08-03 ~ 2026-08-21',
+     doc:'https://drive.google.com/open?id=15Ya_wAB90JDCHGeIrqU5ecQUEXG6Y-Yo&usp=drive_fs',
+     reqs:[
+       {id:'r14',type:'recruit',status:'d',recruit:'2026-08-03 ~ 2026-08-21',goal:'40명',
+        link:'https://dcamp.kr/program/237488'},
+     ],
+     changelog:[{id:'c19',who:'전민영',what:'프로그램 등록',ts:Date.now()-D*90}],
+     createdAt:Date.now()-D*90},
+
+    {id:'p11',team:'전략팀',person:'박채희',
+     name:'디캠프 탄소중립캠페인 (#고립청년 주거개선)',
+     target:'어글리랩 오늘수거 서비스 이용고객 및 잠재고객',
+     benefit:'디캠프X서울시자원봉사센터 청년팀X어글리랩 협력 활동\n탄소저감 + 청년 주거 취약계층 지원',
+     event:'2026-09 1주차',
+     doc:'https://docs.google.com/document/d/1ZQHO7XoU7fpm3bmLfV7uD7QhIfQhUtVGZGV-3HGT6Qs/edit',
+     reqs:[
+       {id:'r15',type:'video',status:'c',video_when:'',video_where:'',
+        video_note:'전문 영상촬영 희망\n25년 어글리어스와 함께한 효도밥상 캠페인 스타일\n사회의 회색지대 청년들을 오늘수거 서비스와 함께 지원하는 역동적 현장'},
+       {id:'r16',type:'photo',status:'c',photo_when:'',photo_where:''},
+     ],
+     changelog:[{id:'c20',who:'박채희',what:'프로그램 등록',ts:Date.now()-D*82}],
+     createdAt:Date.now()-D*82},
+
+    {id:'p12',team:'전략팀',person:'박채희',
+     name:'디캠프 탄소중립캠페인 (#환경인식개선 업사이클링)',
+     target:'환경보호, 가치소비에 관심 있는 2030 세대 여성 소비자',
+     benefit:'디캠프X어글리랩 자원순환 활동\n성수동 11plus1 팝업 현장',
+     event:'2026-08-28',
+     reqs:[
+       {id:'r17',type:'video',status:'c',video_when:'2026-08-28',video_where:'성수동 11plus 1',
+        video_note:'자원순환캠페인 내부 자체제작 수준 영상\n참관객 체험동선, 오늘수거 서비스, 탄소중립 효과 역동적으로'},
+       {id:'r18',type:'photo',status:'c',photo_when:'2026-08-28',photo_where:'성수동 11plus 1'},
+     ],
+     changelog:[{id:'c21',who:'박채희',what:'프로그램 등록',ts:Date.now()-D*82}],
+     createdAt:Date.now()-D*82},
+
+    {id:'p13',team:'resource',person:'배태준',
+     name:'9월 오피스아워 #사업협력',
+     target:'기업별 사업협력 수요와 관련된 사업 아이템을 보유한 스타트업',
+     event:'2026-09-14 ~ 2026-09-30',
+     doc:'https://drive.google.com/drive/u/3/folders/1XsMWAneoNWUq4FAGRyCL8oYTsaTW4nO7',
+     reqs:[
+       {id:'r19',type:'recruit',status:'d',recruit:'2026-08-18 ~ 2026-09-02',goal:'30명',
+        link:'아모레퍼시픽, 에쓰오일, 쿠팡 링크 (8/18 생성)',
+        camp_note:'쿠팡은 투자 검토 목적 참여 — 직접 투자 검토 및 필요시 투자 조건부 PoC 진행 홍보에 반영 필요'},
+     ],
+     changelog:[{id:'c22',who:'배태준',what:'프로그램 등록',ts:Date.now()-D*72}],
+     createdAt:Date.now()-D*72},
+
+    {id:'p14',team:'resource',person:'배태준',
+     name:'9월 오피스아워 #벤처투자',
+     target:'IR점검 및 투자유치를 희망하는 스타트업',
+     event:'2026-09-14 ~ 2026-09-30',
+     doc:'https://drive.google.com/drive/u/3/folders/1XsMWAneoNWUq4FAGRyCL8oYTsaTW4nO7',
+     reqs:[
+       {id:'r20',type:'recruit',status:'d',recruit:'2026-08-18 ~ 2026-09-02',goal:'90명',
+        link:'링크 8/18 생성'},
+     ],
+     changelog:[{id:'c23',who:'배태준',what:'프로그램 등록',ts:Date.now()-D*72}],
+     createdAt:Date.now()-D*72},
+
+    {id:'p15',team:'biz ops',person:'양순모',
+     name:'디캠프 배치 9기',
+     target:'프리밸류 100억~300억 내외 IT서비스/솔루션 스타트업',
+     benefit:'선발 즉시 투자 + 76개 펀드 네트워크 1,200억 드라이파우더\n업계 최고 수준 전문가 1:1 전문멘토 시스템\n기존 참여 기업 성과',
+     event:'2026-08-31 ~ 2026-10-14',
+     doc:'https://drive.google.com/open?id=1ZFX24tkMPws6euOYIqPlhdQW7gpbFVOj&usp=drive_fs',
+     reqs:[
+       {id:'r21',type:'recruit',status:'d',recruit:'2026-08-31 ~ 2026-10-14',goal:'타깃 250개사, 신규 200개사',
+        link:'https://dcamp.kr/program/batch'},
+     ],
+     changelog:[{id:'c24',who:'양순모',what:'프로그램 등록',ts:Date.now()-D*60}],
+     createdAt:Date.now()-D*60},
+
+    {id:'p16',team:'space',person:'한우리',
+     name:'디캠프 공간 홍보 영상',
+     target:'대관 공간 이용 잠재 고객',
+     event:'2026-10-12~',
+     reqs:[
+       {id:'r22',type:'content',status:'d',channels:'유튜브, 인스타그램, 페이스북',cont_date:'2026-10-12',
+        cont_body:'대관 공간 홍보 영상 게재하여 재단 대관 사업 및 공간 소개',
+        cont_desc:'드림플러스(유튜브) 참고'},
+     ],
+     changelog:[{id:'c25',who:'한우리',what:'프로그램 등록',ts:Date.now()-D*28}],
+     createdAt:Date.now()-D*28},
+
+    {id:'p17',team:'resource',person:'전한슬',
+     name:'스타트업 모닝클럽 1회차',
+     target:'디캠프 패밀리사 창업자',
+     benefit:'스타트업 간 밀도 높은 네트워킹\n1회차 연사: 한국신용데이터 대표 / 공동주최: 커리어데이',
+     event:'2026-10-12 07:00',
+     doc:'https://docs.google.com/document/d/1Mhg4XZClqIV3peJua6fiCvsVuTBrIRVXBilG5wzyrLo/edit?usp=sharing',
+     reqs:[
+       {id:'r23',type:'content',status:'c',channels:'홈페이지, 페이스북, 인스타그램',cont_date:'2026-10-07',
+        cont_body:'모닝클럽 1회차 행사 소개 및 현장 스케치'},
+       {id:'r24',type:'video',status:'c',video_when:'2026-10-12 06:50',video_where:'선릉 4층 라운지'},
+       {id:'r25',type:'photo',status:'c',photo_when:'2026-10-12 06:50',photo_where:'선릉 4층 라운지'},
+     ],
+     changelog:[{id:'c26',who:'전한슬',what:'프로그램 등록',ts:Date.now()-D*20}],
+     createdAt:Date.now()-D*20},
+
+    {id:'p18',team:'resource',person:'남지은',
+     name:'Startup OI #지역실증',
+     target:'지역/공공과의 사업협력(실증)을 희망하는 스타트업, 지역/공공 관계자',
+     benefit:'다양한 지역/공공의 지역현안 및 스타트업과의 문제 해결 방안 확인\n전국구 지역 참여, 지역/공공 담당자 네트워킹',
+     event:'2026-11-06 ~ 2026-12-07',
+     reqs:[
+       {id:'r26',type:'recruit',status:'a',recruit:'2026-11-06 ~ 2026-12-07',goal:'100명',
+        link:'11월 초 중 링크 생성 예정',
+        camp_note:'전국구 단위 지역 참여, 지역/공공 담당자 네트워킹과 타 실증사업 참여 희망 스타트업 메인으로 소구'},
+     ],
+     changelog:[{id:'c27',who:'남지은',what:'프로그램 등록',ts:Date.now()-D*68}],
+     createdAt:Date.now()-D*68},
+
+    // ── 0ld 시트 데이터 ──
+    {id:'p19',team:'전략팀',person:'박채희',
+     name:'2026 사회공헌캠페인 온기나눔 연탄봉사',
+     target:'스타트업 생태계 내 이해관계자 전반, 패밀리사 고객 및 이해관계자',
+     benefit:'디캠프 + 패밀리사(고퍼소프트, 메이즈) 공동 지역사회 공헌\nESG경영가치 제고, 에너지 취약계층 지원',
+     event:'2026-03-24',
+     reqs:[
+       {id:'r27',type:'pr',status:'d',pr_date:'2026-03-24',
+        pr_body:'디캠프와 패밀리사 임직원 공동 연탄봉사 활동\n지속가능경영 인식 확산 및 PR 포인트',
+        pr_note:'언론 배포 + 뉴스레터 + 영상제작 요청'},
+       {id:'r28',type:'video',status:'d',video_when:'2026-03-24',video_where:''},
+     ],
+     changelog:[{id:'c28',who:'박채희',what:'프로그램 등록',ts:Date.now()-D*218}],
+     createdAt:Date.now()-D*218},
+
+    {id:'p20',team:'전략팀',person:'박채희',
+     name:'2026 자원순환캠페인 플라스틱 병뚜껑 업사이클링',
+     target:'스타트업 생태계 이해관계자, 패밀리사 고객 및 이해관계자',
+     benefit:'디캠프 마포·선릉 폐기물 자원순환\n디버 오늘수거 서비스 홍보 및 ESG 이미지 제고',
+     event:'수거기간 2026-03-09 ~ 2026-05-10 / 제작 2026-05-19',
+     reqs:[
+       {id:'r29',type:'pr',status:'d',pr_date:'2026-06-01',
+        pr_body:'자원순환 과정을 디캠프와 스타트업이 함께 경험하는 활동 홍보',
+        pr_note:'언론 배포 + 유튜브 영상 제작'},
+       {id:'r30',type:'video',status:'d',video_when:'2026-05-19',video_where:'디캠프 마포/선릉'},
+     ],
+     changelog:[{id:'c29',who:'박채희',what:'프로그램 등록',ts:Date.now()-D*178}],
+     createdAt:Date.now()-D*178},
+
+    {id:'p21',team:'글로벌사업팀',person:'윤세란',
+     name:'Startup OI Kyoto #Deeptech',
+     target:'Seed~Series B 단계 딥테크 스타트업 (모빌리티/로보틱스, 헬스케어, 반도체)',
+     benefit:'한국무라타전자와 협업\n무라타 기술 Tech-fit 검토 및 일본 Private Pitching 기회',
+     event:'2026-05-11 ~ 2026-09-16',
+     reqs:[
+       {id:'r31',type:'recruit',status:'d',recruit:'2026-05-11~',goal:'',
+        link:'https://dcamp.kr/program/220918'},
+     ],
+     changelog:[{id:'c30',who:'윤세란',what:'프로그램 등록',ts:Date.now()-D*175}],
+     createdAt:Date.now()-D*175},
+
+    {id:'p22',team:'글로벌사업팀',person:'윤세란',
+     name:'Startup OI Tokyo #IP Business',
+     target:'일본 진출 희망 YouTube IP, 크리에이터, 팬덤, 팝업스토어, 브랜드 커머스 분야 스타트업',
+     benefit:'TBS Innovation Partners·Styling Life Holdings 협업 오픈이노베이션',
+     event:'모집 2026-06-26 ~ 2026-07-10',
+     reqs:[
+       {id:'r32',type:'recruit',status:'d',recruit:'2026-06-26 ~ 2026-07-10',goal:'',
+        link:'https://dcamp.kr/program/232269'},
+     ],
+     changelog:[{id:'c31',who:'윤세란',what:'프로그램 등록',ts:Date.now()-D*130}],
+     createdAt:Date.now()-D*130},
+
+    {id:'p23',team:'글로벌사업팀',person:'김재연',
+     name:'dcamp x Stanford Consumer Accelerator',
+     target:'K-뷰티, K-푸드, 웰니스·기능성 소비재, 컨수머 테크 스타트업',
+     benefit:'Stanford University 산하 SCIDR과 공동 기획·운영\n미국 현지 실전형 K-Consumer 액셀러레이팅',
+     event:'모집 2026-06-29 ~ 2026-07-24',
+     reqs:[
+       {id:'r33',type:'recruit',status:'d',recruit:'2026-06-29 ~ 2026-07-24',goal:'',
+        link:'https://dcamp.kr/program/232668'},
+     ],
+     changelog:[{id:'c32',who:'김재연',what:'프로그램 등록',ts:Date.now()-D*125}],
+     createdAt:Date.now()-D*125},
+
+    {id:'p24',team:'resource',person:'임새롬',
+     name:'Startup OI #지역실증 피칭 스타트업 모집',
+     target:'올해 협력/도입 수요를 실제 확인한 초기단계 스타트업',
+     benefit:'9월 지역실증 피칭 참여 기회\n지역/공공 관계자 네트워킹',
+     event:'모집 2026-07-06 ~ 2026-08-07',
+     reqs:[
+       {id:'r34',type:'recruit',status:'d',recruit:'2026-07-06 ~ 2026-08-07',goal:'',
+        link:'https://dcamp.kr/program/232669'},
+     ],
+     changelog:[{id:'c33',who:'임새롬',what:'프로그램 등록',ts:Date.now()-D*113}],
+     createdAt:Date.now()-D*113},
+
+    {id:'p25',team:'글로벌사업팀',person:'김재연',
+     name:'디캠프 미국 프로그램 홍보 (하반기)',
+     target:'미국 진출 준비 AI/B2B SaaS, 딥테크, 소비재 스타트업',
+     benefit:'Storm Ventures 남태희 대표, ACVC 무스타, 스탠포드 SCIDR 관계자 인터뷰 기반 콘텐츠\n미국 VC 관점, 현지 파트너십, 기술 실증 전략',
+     event:'2026년 하반기',
+     reqs:[
+       {id:'r35',type:'content',status:'d',channels:'뉴스레터, 링크드인, 인스타그램, 페이스북',cont_date:'2026-06-25',
+        cont_body:'미국 프로그램 정체성 강화 및 글로벌 전문성 홍보 시리즈 콘텐츠',
+        cont_desc:'6/25 인터뷰 이후 시리즈물로 배포 희망'},
+       {id:'r36',type:'video',status:'d',video_when:'2026-06-25',video_where:''},
+     ],
+     changelog:[{id:'c34',who:'김재연',what:'프로그램 등록',ts:Date.now()-D*128}],
+     createdAt:Date.now()-D*128},
+
+    {id:'p26',team:'growth',person:'이동현',
+     name:'배치 3기 디데이',
+     target:'투자사·파트너사, 유관기관, 스타트업 대표, 미디어·예비 창업팀',
+     benefit:'배치 3기 디데이 개최·참여기업·성과 홍보\n링크드인 콘텐츠 4종 시리즈 게재',
+     event:'2026-07-30',
+     reqs:[
+       {id:'r37',type:'content',status:'d',channels:'링크드인',cont_date:'2026-06-25',
+        cont_body:'①개최 예고 ②참여기업·성과 ③마감 임박 ④행사 현장 4종 시리즈'},
+     ],
+     changelog:[{id:'c35',who:'이동현',what:'프로그램 등록',ts:Date.now()-D*120}],
+     createdAt:Date.now()-D*120},
+
+    {id:'p27',team:'전략팀',person:'박채희',
+     name:'2026 Startup OI #금융권 현장 사진촬영',
+     target:'키노트 스피커, 피칭 기업, 금융기관 담당자, 심사위원, 시상식',
+     event:'2026-06-24',
+     reqs:[
+       {id:'r38',type:'photo',status:'d',photo_when:'2026-06-24',photo_where:'디캠프'},
+     ],
+     changelog:[{id:'c36',who:'박채희',what:'프로그램 등록',ts:Date.now()-D*134}],
+     createdAt:Date.now()-D*134},
+  ];
+  renderAll();
+}
+
+// ── RENDER ALL ────────────────────────────────────────
+function renderAll(){
+  renderStats();
+  updateSortIcons();
+  renderList();
+  renderNavCounts();
+}
+
+function renderStats(){
+  document.getElementById('st-total').textContent=progs.length;
+  const active=progs.filter(p=>p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e'));
+  document.getElementById('st-active').textContent=active.length;
+  const week=Date.now()-86400000*7;
+  const changed=progs.filter(p=>p.changelog&&p.changelog.some(c=>c.ts>week));
+  document.getElementById('st-changed').textContent=changed.length;
+  document.getElementById('st-done').textContent=progs.filter(p=>p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d')).length;
+}
+
+function renderNavCounts(){
+  const all=document.getElementById('fc-all'); if(all)all.textContent=progs.length;
+  const active=document.getElementById('fc-active'); if(active)active.textContent=progs.filter(p=>p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e')).length;
+  const done=document.getElementById('fc-done'); if(done)done.textContent=progs.filter(p=>p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d')).length;
+}
+
+function setSort(key){
+  if(curSort===key) curSortDir=curSortDir==='asc'?'desc':'asc';
+  else{curSort=key;curSortDir='desc';}
+  updateSortIcons();
+  renderList();
+}
+function updateSortIcons(){
+  ['name','team','createdAt','updatedAt'].forEach(k=>{
+    const el=document.getElementById('sort-'+k);
+    if(!el)return;
+    el.textContent=curSort===k?(curSortDir==='asc'?'↑':'↓'):'';
+  });
+}
+function getProgUpdatedAt(p){
+  const cl=p.changelog||[];
+  return cl.length?Math.max(...cl.map(c=>c.ts||0)):p.createdAt||0;
+}
+function setDropFilter(){
+  const status=document.getElementById('dd-status')?.value||'all';
+  const type=document.getElementById('dd-type')?.value||'all';
+  const team=document.getElementById('dd-team')?.value||'';
+  // 상태 동기화
+  curFilter=status;
+  document.querySelectorAll('[id^="fnav-"]').forEach(el=>el.classList.remove('on'));
+  document.getElementById('fnav-'+status)?.classList.add('on');
+  // 유형 동기화
+  curTypeFilter=type;
+  document.querySelectorAll('[id^="ftype-"]').forEach(el=>el.classList.remove('on'));
+  document.getElementById('ftype-'+(type||'all'))?.classList.add('on');
+  // 팀 동기화
+  curTeam=team;
+  document.querySelectorAll('[id^="fteam-"]').forEach(el=>el.classList.remove('on'));
+  document.getElementById('fteam-'+(team||'all'))?.classList.add('on');
+
+  renderList();
+}
+function updateListTitle(){
+  const statusLabels={all:'전체',active:'진행 중',done:'완료'};
+  const typeLabels2={all:'전체',recruit:'모집',content:'콘텐츠',video:'현장 스케치 영상',photo:'사진촬영'};
+  const s=statusLabels[curFilter]||curFilter;
+  const t=typeLabels2[curTypeFilter]||curTypeFilter;
+  const tm=curTeam||'전체';
+  document.getElementById('list-title').textContent=`${s} · ${t} · ${tm}`;
+}
+function filterStatus(f){
+  curFilter=f;
+  document.querySelectorAll('[id^="fnav-"]').forEach(el=>el.classList.remove('on'));
+  document.getElementById('fnav-'+f)?.classList.add('on');
+  const dd=document.getElementById('dd-status');
+  if(dd)dd.value=f;
+
+  openNavParent('view');
+  showPage('list');
+  renderList();
+}
+function filterType(type){
+  curTypeFilter=type;
+  document.querySelectorAll('[id^="ftype-"]').forEach(el=>el.classList.remove('on'));
+  document.getElementById('ftype-'+(type||'all'))?.classList.add('on');
+  document.querySelectorAll('.fc').forEach(b=>b.classList.remove('on'));
+  const fcBtn=document.querySelector(`.fc[data-f="${type}"]`);
+  if(fcBtn)fcBtn.classList.add('on');
+  const dd=document.getElementById('dd-type');
+  if(dd)dd.value=type;
+
+  openNavParent('view');
+  showPage('list');
+  renderList();
+}
+function filterTeam(team){
+  curTeam=team;
+  document.querySelectorAll('[id^="fteam-"]').forEach(el=>el.classList.remove('on'));
+  document.getElementById('fteam-'+(team||'all'))?.classList.add('on');
+  const dd=document.getElementById('dd-team');
+  if(dd)dd.value=team;
+
+  openNavParent('view');
+  showPage('list');
+  renderList();
+}
+function toggleNavParent(key){
+  const p=document.getElementById('nav-parent-'+key);
+  const s=document.getElementById('nav-sub-'+key);
+  const open=s.classList.contains('open');
+  // 이미 열려있고 list 페이지면 → 닫기만 (이동 없음)
+  if(open && document.getElementById('page-list').classList.contains('on')){
+    p.classList.remove('open'); s.classList.remove('open'); return;
+  }
+  p.classList.toggle('open',!open);
+  s.classList.toggle('open',!open);
+}
+function openNavParent(key){
+  document.getElementById('nav-parent-'+key).classList.add('open');
+  document.getElementById('nav-sub-'+key).classList.add('open');
+}
+
+function setF(btn,f){
+  curTypeFilter=f;
+  document.querySelectorAll('.fc').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('[id^="ftype-"]').forEach(el=>el.classList.remove('on'));
+  const ftypeEl=document.getElementById('ftype-'+(f==='all'?'all':f));
+  if(ftypeEl)ftypeEl.classList.add('on');
+  renderList();
+}
+
+function renderList(){
+  const q=(document.getElementById('q')||{}).value.toLowerCase();
+  let data=progs.filter(p=>{
+    if(q&&!p.name.toLowerCase().includes(q))return false;
+    if(curTeam&&p.team!==curTeam)return false;
+    if(curFilter==='active')return p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e'&&r.status!=='f');
+    if(curFilter==='done')return p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d');
+    if(curFilter==='hold')return p.reqs&&p.reqs.some(r=>r.status==='e');
+    return true;
+  }).filter(p=>{
+    if(curTypeFilter==='all')return true;
+    return p.reqs&&p.reqs.some(r=>r.type===curTypeFilter);
+  });
+
+  // 정렬
+  data.sort((a,b)=>{
+    let av,bv;
+    if(curSort==='name'){av=a.name||'';bv=b.name||'';}
+    else if(curSort==='team'){av=a.team||'';bv=b.team||'';}
+    else if(curSort==='updatedAt'){av=getProgUpdatedAt(a);bv=getProgUpdatedAt(b);}
+    else{av=a.createdAt||0;bv=b.createdAt||0;}
+    if(typeof av==='string')return curSortDir==='asc'?av.localeCompare(bv):bv.localeCompare(av);
+    return curSortDir==='asc'?av-bv:bv-av;
+  });
+
+  const el=document.getElementById('prog-list');
+  if(!data.length){el.innerHTML='<li class="empty"><i class="ti ti-inbox"></i>프로그램이 없어요</li>';return;}
+
+  el.innerHTML=data.map(p=>{
+    const week=Date.now()-86400000*7;
+    const hasNew=p.changelog&&p.changelog.some(c=>c.ts>week&&!c.who.includes('등록'));
+    const reqStatuses=(p.reqs||[]).map(r=>{
+      const s=stOf(r.status);
+      return`<span class="rchip rc-${r.type}" style="display:inline-flex;align-items:center;gap:4px">
+        ${REQ_LABELS[r.type]} <span style="opacity:.6">·</span> ${s.l}
+      </span>`;
+    }).join('');
+    return`<li class="prog-row" onclick="openProg('${p.id}')">
+      <div>
+        <div class="prog-name">${p.name}${hasNew?'<span class="updated-dot" title="최신 변경 있음"></span>':''}</div>
+      </div>
+      <div style="font-size:12px;color:var(--text-2)">${p.team}<br>${p.person}</div>
+      <div style="display:flex;flex-direction:column;gap:4px">${reqStatuses||'<span style="font-size:12px;color:var(--text-3)">요청 없음</span>'}</div>
+      <div style="text-align:right;display:flex;flex-direction:column;gap:3px">
+        <div style="font-size:11px;color:var(--text-3)">${rtime(p.createdAt||0)}</div>
+        ${getProgUpdatedAt(p)!==p.createdAt?`<div style="font-size:11px;color:var(--accent);font-weight:500">${rtime(getProgUpdatedAt(p))}</div>`:''}
+      </div>
+    </li>`;
+  }).join('');
+}
+
+// ── DETAIL ────────────────────────────────────────────
+function openProg(id){
+  curProgId=id;
+  const p=progs.find(x=>x.id===id);
+  if(!p)return;
+  renderDetail(p);
+  showPage('detail');
+}
+
+function renderDetail(p){
+  document.getElementById('detail-title').textContent=p.name;
+  // 최초 작성일
+  const createdEl=document.getElementById('detail-created');
+  if(createdEl){
+    const fmt=ts=>{const d=new Date(ts);return`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;};
+    const updated=getProgUpdatedAt(p);
+    const isSame=updated===p.createdAt||!updated||updated===0;
+    createdEl.innerHTML=`등록 ${fmt(p.createdAt||Date.now())}${!isSame?` <span style="color:var(--accent)">· 변경 ${fmt(updated)}</span>`:''}`;
+  }
+
+  // 기본 정보 필드
+  const fieldsEl=document.getElementById('prog-fields');
+  fieldsEl.innerHTML=PROG_FIELDS.map(f=>{
+    const val=p[f.key]||'';
+    const display=val?renderDocVal(val,f.key):`<span class="empty-val">–</span>`;
+    const isDoc=f.key==='doc';
+    const isEvent=f.key==='event';
+    // event 필드: 기존값 파싱
+    const parts=(val||'').split('~').map(s=>s.trim());
+    const isDateVal=parts[0]&&parts[0].match(/^\d{4}-\d{2}-\d{2}/);
+    const fromV=isDateVal?(parts[0]||'').replace(' ','T'):'';
+    const toV=isDateVal?(parts[1]||'').replace(' ','T'):'';
+    const textV=isDateVal?'':(val||'');
+
+    const eventInput=isEvent?`<div style="flex:1">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:11px;display:flex;gap:8px">
+          <button type="button" id="ef-event-tab-date-${p.id}" onclick="setEFEventMode('${p.id}','date')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:${isDateVal||!val?'var(--accent)':'var(--text-3)'};font-weight:${isDateVal||!val?'600':'400'};padding:0">날짜로 입력</button>
+          <button type="button" id="ef-event-tab-text-${p.id}" onclick="setEFEventMode('${p.id}','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:${!isDateVal&&val?'var(--accent)':'var(--text-3)'};font-weight:${!isDateVal&&val?'600':'400'};padding:0">직접 입력</button>
+        </span>
+      </div>
+      <div id="ef-event-date-${p.id}" style="display:${isDateVal||!val?'flex':'none'};align-items:center;gap:6px;margin-bottom:4px">
+        <input id="efi-${p.id}-event-from" type="datetime-local" value="${fromV}" style="flex:1;font-size:12px">
+        <span style="color:var(--text-3);flex-shrink:0">~</span>
+        <input id="efi-${p.id}-event-to" type="datetime-local" value="${toV}" style="flex:1;font-size:12px">
+      </div>
+      <div id="ef-event-text-${p.id}" style="display:${!isDateVal&&val?'block':'none'}">
+        <input id="efi-${p.id}-event-text" type="text" value="${textV}" placeholder="예: 10월 중 / 11월 초 예정">
+      </div>
+    </div>`:'';
+
+    const docInput=isDoc?`<div style="flex:1">
+      <div id="ef-doc-list-${p.id}" style="display:flex;flex-direction:column;gap:6px">
+        ${(val?val.split('\n').filter(Boolean):['']).map((line,i)=>{
+          const m=line.match(/^\[(.+?)\]\s*(https?:\/\/.+)$/);
+          const url=m?m[2]:(/^https?:\/\//.test(line)?line:'');
+          const label=m?m[1]:'';
+          return`<div style="display:flex;gap:6px;align-items:center">
+            <input type="text" placeholder="https://drive.google.com/…" style="flex:1;font-size:12px" class="doc-url-ef" value="${url.replace(/"/g,'&quot;')}">
+            <input type="text" placeholder="예: 계획안" style="width:100px;flex-shrink:0;font-size:12px" class="doc-label-ef" value="${label.replace(/"/g,'&quot;')}">
+            <button type="button" onclick="this.closest('div').remove()" style="flex-shrink:0;width:24px;height:24px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-3)">×</button>
+          </div>`;
+        }).join('')}
+      </div>
+      <button type="button" onclick="addDocEFField('${p.id}')" style="margin-top:6px;font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:flex;align-items:center;gap:4px"><i class="ti ti-plus" style="font-size:12px"></i>링크 추가</button>
+      <div style="display:flex;gap:4px;margin-top:8px">
+        <button class="btn btn-primary btn-sm" onclick="commitDocEF('${p.id}')"><i class="ti ti-check"></i></button>
+        <button class="btn btn-ghost btn-sm" onclick="cancelEF('${p.id}','doc')"><i class="ti ti-x"></i></button>
+      </div>
+    </div>`:'';
+
+    return`<div class="ef-row" id="ef-${p.id}-${f.key}">
+      <div class="ef-label">${f.label}</div>
+      <div class="ef-val${val?'':' empty-val'}" ondblclick="startEF('${p.id}','${f.key}',${!!f.multi})" title="더블클릭하여 수정">${display}</div>
+      <div class="ef-input-wrap">
+        ${isDoc?docInput:isEvent?eventInput:f.multi?`<textarea id="efi-${p.id}-${f.key}" rows="3">${val}</textarea>`:`<input id="efi-${p.id}-${f.key}" type="text" value="${val.replace(/"/g,'&quot;')}">`}
+        ${isDoc||isEvent?'':`<div class="ef-actions">
+          <button class="btn btn-primary btn-sm" onclick="commitEF('${p.id}','${f.key}','${f.label}',${!!f.multi})"><i class="ti ti-check"></i></button>
+          <button class="btn btn-ghost btn-sm" onclick="cancelEF('${p.id}','${f.key}')"><i class="ti ti-x"></i></button>
+        </div>`}
+        ${isEvent?`<div class="ef-actions">
+          <button class="btn btn-primary btn-sm" onclick="commitEventEF('${p.id}')"><i class="ti ti-check"></i></button>
+          <button class="btn btn-ghost btn-sm" onclick="cancelEF('${p.id}','${f.key}')"><i class="ti ti-x"></i></button>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // 요청들
+  const reqEl=document.getElementById('req-list');
+  if(!p.reqs||!p.reqs.length){reqEl.innerHTML='';return;}
+  reqEl.innerHTML=p.reqs.map(r=>{
+    const s=stOf(r.status);
+    const fields=REQ_FIELDS[r.type]||[];
+    const allFields=fields; // 값 없는 것도 편집 가능하게 표시
+    return`<div class="req-card">
+      <div class="req-head">
+        <span class="rchip rc-${r.type}" style="font-size:12px">${REQ_LABELS[r.type]}</span>
+        <span class="req-head-title"></span>
+        <select class="status-sel" onchange="handleReqSelectChange('${p.id}','${r.id}',this)">
+          ${STATUSES.map(st=>`<option value="${st.v}"${r.status===st.v?' selected':''}>${st.l}</option>`).join('')}
+          <option disabled>──────────</option>
+          <option value="__delete__">🗑 요청 삭제</option>
+        </select>
+      </div>
+      <div class="req-body">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">항목 더블클릭 시 수정</div>
+        ${allFields.map(f=>{
+          const val=r[f.key]||'';
+          const ftype=f.type||'text';
+          const multi=!!f.multi;
+          const displayVal=fmtDate(val);
+          const display=displayVal?displayVal.replace(/</g,'&lt;').replace(/\n/g,'<br>'):`<span style="color:var(--text-3);font-style:italic">–</span>`;
+          const CH_LIST=['홈페이지','링크드인','인스타그램','페이스북','유튜브 (현장스케치 외)','뉴스레터'];
+          const eid=`${p.id}-${r.id}-${f.key}`;
+          const pid2=p.id, rid2=r.id, key2=f.key, label2=f.label;
+
+          let inputHtml='';
+          let actionsHtml=`<div class="ef-actions">
+            <button class="btn btn-primary btn-sm" onclick="commitREF('${pid2}','${rid2}','${key2}','${label2}',${multi})"><i class="ti ti-check"></i></button>
+            <button class="btn btn-ghost btn-sm" onclick="cancelREF('${pid2}','${rid2}','${key2}')"><i class="ti ti-x"></i></button>
+          </div>`;
+
+          if(ftype==='channels'){
+            const selectedChs=(val||'').split(',').map(s=>s.trim()).filter(Boolean);
+            inputHtml=`<div style="display:flex;flex-direction:column;gap:6px;flex:1">
+              <div class="ch-grid" id="efi-${eid}">
+                ${CH_LIST.map(ch=>`<label class="ch-label${selectedChs.includes(ch)?' checked':''}">
+                  <input type="checkbox" value="${ch}" ${selectedChs.includes(ch)?'checked':''} onchange="toggleChLabel(this)">${ch}
+                </label>`).join('')}
+              </div>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-primary btn-sm" onclick="commitChannels('${pid2}','${rid2}')"><i class="ti ti-check"></i></button>
+                <button class="btn btn-ghost btn-sm" onclick="cancelREF('${pid2}','${rid2}','${key2}')"><i class="ti ti-x"></i></button>
+              </div>
+            </div>`;
+            actionsHtml='';
+          } else if(ftype==='daterange'||ftype==='datetimerange'){
+            const isdt=ftype==='datetimerange';
+            const itype=isdt?'datetime-local':'date';
+            // 기존값 파싱 (YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM)
+            const parts=(val||'').split('~').map(s=>s.trim());
+            const fromVal=parts[0]?parts[0].replace(' ','T'):'';
+            const toVal=parts[1]?parts[1].replace(' ','T'):'';
+            inputHtml=`<div style="flex:1">
+              <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">
+                <input id="efi-${eid}-from" type="${itype}" value="${fromVal}" style="flex:1;font-size:12px">
+                <span style="color:var(--text-3)">~</span>
+                <input id="efi-${eid}-to" type="${itype}" value="${toVal}" style="flex:1;font-size:12px">
+              </div>
+              <input id="efi-${eid}-text" type="text" placeholder="직접 입력" value="${val.includes('~')||val.match(/\\d{4}-\\d{2}-\\d{2}/)?'':val}" style="font-size:12px;color:var(--text-3)">
+              <div style="font-size:11px;color:var(--text-3);margin-top:2px">날짜 피커 또는 아래 직접 입력</div>
+            </div>`;
+            actionsHtml=`<div class="ef-actions">
+              <button class="btn btn-primary btn-sm" onclick="commitDateRange('${pid2}','${rid2}','${key2}','${label2}','${isdt}')"><i class="ti ti-check"></i></button>
+              <button class="btn btn-ghost btn-sm" onclick="cancelREF('${pid2}','${rid2}','${key2}')"><i class="ti ti-x"></i></button>
+            </div>`;
+          } else if(ftype==='date'){
+            const parts=(val||'').split('~').map(s=>s.trim());
+            const fromVal=parts[0]||'';
+            inputHtml=`<div style="flex:1">
+              <input id="efi-${eid}-from" type="date" value="${fromVal}" style="flex:1;font-size:12px;margin-bottom:4px;display:block">
+              <input id="efi-${eid}-text" type="text" placeholder="직접 입력" value="${fromVal.match(/\\d{4}-\\d{2}-\\d{2}/)?'':val}" style="font-size:12px;color:var(--text-3)">
+              <div style="font-size:11px;color:var(--text-3);margin-top:2px">날짜 피커 또는 아래 직접 입력</div>
+            </div>`;
+            actionsHtml=`<div class="ef-actions">
+              <button class="btn btn-primary btn-sm" onclick="commitDateRange('${pid2}','${rid2}','${key2}','${label2}','false')"><i class="ti ti-check"></i></button>
+              <button class="btn btn-ghost btn-sm" onclick="cancelREF('${pid2}','${rid2}','${key2}')"><i class="ti ti-x"></i></button>
+            </div>`;
+          } else if(multi){
+            inputHtml=`<textarea id="efi-${eid}" rows="3">${val}</textarea>`;
+          } else {
+            inputHtml=`<input id="efi-${eid}" type="text" value="${val.replace(/"/g,'&quot;')}">`;
+          }
+
+          return`<div class="ef-row" id="ef-${eid}">
+            <div class="ef-label">${f.label}</div>
+            <div class="ef-val${val?'':' empty-val'}" ondblclick="startREF('${pid2}','${rid2}','${key2}',${multi})" title="더블클릭하여 수정">${display}</div>
+            <div class="ef-input-wrap">
+              ${inputHtml}${actionsHtml}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  // 변경 이력
+  renderChangelog(p);
+}
+
+function renderChangelog(p){
+  const cl=(p.changelog||[]);
+  document.getElementById('cl-count').textContent=cl.length+'건';
+  const el=document.getElementById('cl-list');
+  if(!cl.length){el.innerHTML='<div style="padding:14px;font-size:12px;color:var(--text-3);text-align:center">변경 이력이 없어요.</div>';return;}
+  el.innerHTML=[...cl].reverse().map(c=>{
+    const isComment=!!c.isComment;
+    const isTeam=!isComment&&(c.who==='홍보팀'||c.who.includes('팀'));
+    const initials=isComment?'💬':(c.who.length>=2?c.who.slice(-2):c.who);
+    const avatarStyle=isComment?'background:#EEF0FD;color:#4338CA':isTeam?'background:#EDE9FE;color:#5B21B6':'';
+    return`<div class="cl-item" id="cli-${c.id}">
+      <div class="cl-avatar${isTeam?' team':''}" style="${avatarStyle}">${initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="cl-who">${c.who}</div>
+        <div class="cl-bubble">
+          <div class="cl-what">${(c.what||'').replace(/\n/g,'<br>').replace(
+            /"([^"]*)" → "([^"]*)"/g,
+            (_,a,b)=>`<span style="color:var(--text-3);text-decoration:line-through;font-size:11px">${a||'(없음)'}</span> <span style="color:var(--text-3);font-size:11px">→</span> <span style="color:var(--accent);font-size:11px;font-weight:600">${b||'(없음)'}</span>`
+          )}</div>
+          ${c.memo?`<div class="cl-memo">${c.memo.replace(/\n/g,'<br>')}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+          <div class="cl-time">${rtime(c.ts||0)}</div>
+          ${!isComment?`<button type="button" onclick="toggleMemoInput('${c.id}')"
+            style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;font-weight:500"
+            id="memo-btn-${c.id}">${c.memo?'사유 수정':'+ 사유 추가'}</button>`:''}
+        </div>
+        <div id="memo-input-wrap-${c.id}" style="display:none;margin-top:6px;display:none">
+          <input type="text" id="memo-input-${c.id}"
+            value="${(c.memo||'').replace(/"/g,'&quot;')}"
+            placeholder="사유를 입력하세요"
+            style="width:100%;font-size:12px"
+            onkeydown="if(event.key==='Enter')saveMemo('${p.id}','${c.id}')">
+          <div style="display:flex;gap:6px;margin-top:5px">
+            <button type="button" class="btn btn-primary btn-sm" onclick="saveMemo('${p.id}','${c.id}')">저장</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleMemoInput('${c.id}')">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CHANGELOG MEMO ────────────────────────────────────
+function toggleMemoInput(cid){
+  const wrap=document.getElementById('memo-input-wrap-'+cid);
+  if(!wrap)return;
+  const isOpen=wrap.style.display==='block';
+  wrap.style.display=isOpen?'none':'block';
+  if(!isOpen)document.getElementById('memo-input-'+cid)?.focus();
+}
+async function saveMemo(pid,cid){
+  const inp=document.getElementById('memo-input-'+cid);
+  if(!inp)return;
+  const val=inp.value.trim();
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const cl=(p.changelog||[]).map(c=>c.id===cid?{...c,...(val?{memo:val}:{memo:undefined})}:c);
+  p.changelog=cl;
+  try{await apiPost({action:'update_prog',id:pid,patch:{changelog:cl}});}catch(e){}
+  renderChangelog(p);
+  toast('사유가 저장됐어요.');
+}
+
+function setEFEventMode(pid, mode){
+  const isDate=mode==='date';
+  const dateEl=document.getElementById(`ef-event-date-${pid}`);
+  const textEl=document.getElementById(`ef-event-text-${pid}`);
+  const tabDate=document.getElementById(`ef-event-tab-date-${pid}`);
+  const tabText=document.getElementById(`ef-event-tab-text-${pid}`);
+  if(dateEl)dateEl.style.display=isDate?'flex':'none';
+  if(textEl)textEl.style.display=isDate?'none':'block';
+  if(tabDate){tabDate.style.color=isDate?'var(--accent)':'var(--text-3)';tabDate.style.fontWeight=isDate?'600':'400';}
+  if(tabText){tabText.style.color=isDate?'var(--text-3)':'var(--accent)';tabText.style.fontWeight=isDate?'400':'600';}
+}
+async function commitEventEF(pid){
+  const dateEl=document.getElementById(`ef-event-date-${pid}`);
+  const isDate=dateEl&&dateEl.style.display!=='none';
+  let val='';
+  if(isDate){
+    const fmt=v=>v?v.replace('T',' ').slice(0,16):'';
+    const f=fmt(document.getElementById(`efi-${pid}-event-from`)?.value||'');
+    const t=fmt(document.getElementById(`efi-${pid}-event-to`)?.value||'');
+    val=f&&t?`${f} ~ ${t}`:f||t;
+  } else {
+    val=document.getElementById(`efi-${pid}-event-text`)?.value.trim()||'';
+  }
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const old=p.event||'';
+  if(val===old){cancelEF(pid,'event');return;}
+  const what=`행사 일정 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
+  cancelEF(pid,'event');
+  openReasonModal('field','행사 일정을 수정했어요.',async(reason)=>{
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    if(reason)logEntry.memo=reason;
+    await updateProg(pid,{event:val},logEntry);
+    toast('수정됐어요.');
+  });
+}
+
+// ── INLINE EDIT ───────────────────────────────────────
+function addDocEFField(pid){
+  const list=document.getElementById('ef-doc-list-'+pid);if(!list)return;
+  const row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center';
+  row.innerHTML=`<input type="text" placeholder="https://drive.google.com/…" style="flex:1;font-size:12px" class="doc-url-ef"><input type="text" placeholder="예: 계획안" style="width:100px;flex-shrink:0;font-size:12px" class="doc-label-ef"><button type="button" onclick="this.closest('div').remove()" style="flex-shrink:0;width:24px;height:24px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-3)">×</button>`;
+  list.appendChild(row);row.querySelector('input').focus();
+}
+async function commitDocEF(pid){
+  const list=document.getElementById('ef-doc-list-'+pid);if(!list)return;
+  const val=[...list.querySelectorAll('div')].map(row=>{
+    const url=(row.querySelector('.doc-url-ef')||{}).value?.trim()||'';
+    const label=(row.querySelector('.doc-label-ef')||{}).value?.trim()||'';
+    if(!url)return'';return label?`[${label}] ${url}`:url;
+  }).filter(Boolean).join('\n');
+  const p=progs.find(x=>x.id===pid);if(!p)return;
+  const old=p.doc||'';if(val===old){cancelEF(pid,'doc');return;}
+  const what=`관련 자료 수정`;
+  cancelEF(pid,'doc');
+  openReasonModal('field','관련 자료를 수정했어요.',async(reason)=>{
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    if(reason)logEntry.memo=reason;
+    await updateProg(pid,{doc:val},logEntry);toast('수정됐어요.');
+  });
+}
+function startEF(pid,key,multi){
+  document.getElementById(`ef-${pid}-${key}`).classList.add('ef-editing');
+  document.getElementById(`efi-${pid}-${key}`).focus();
+}
+function cancelEF(pid,key){
+  document.getElementById(`ef-${pid}-${key}`).classList.remove('ef-editing');
+}
+// ── CHANGE REASON POPUP ───────────────────────────────
+let _pendingAction = null; // {type:'field'|'status', args}
+
+// ── COMMENT ───────────────────────────────────────────
+async function submitComment(){
+  const inp=document.getElementById('comment-input');
+  const val=inp.value.trim();
+  if(!val||!curProgId)return;
+  const p=progs.find(x=>x.id===curProgId);
+  if(!p)return;
+  const logEntry={id:uid(),who:getCurrentUser()||'💬 댓글',what:val,ts:Date.now(),isComment:true};
+  const cl=[...(p.changelog||[]),logEntry];
+  p.changelog=cl;
+  try{await apiPost({action:'update_prog',id:curProgId,patch:{changelog:cl},log:logEntry});}catch(e){}
+  inp.value='';
+  renderChangelog(p);
+  // 스크롤 하단으로
+  const list=document.getElementById('cl-list');
+  if(list)list.scrollTop=0;
+}
+
+function handleReqSelectChange(pid,rid,sel){
+  const val=sel.value;
+  if(val==='__delete__'){
+    // 선택값 원래대로 복원
+    const p=progs.find(x=>x.id===pid);
+    const r=p?.reqs.find(x=>x.id===rid);
+    if(r)sel.value=r.status;
+    confirmDeleteReq(pid,rid,REQ_LABELS[r?.type]||'요청');
+    return;
+  }
+  changeReqStatus(pid,rid,val,sel.options[sel.selectedIndex].text);
+}
+
+// ── DELETE ────────────────────────────────────────────
+let _deleteAction = null;
+function confirmDeleteProg(){
+  const p=progs.find(x=>x.id===curProgId);if(!p)return;
+  document.getElementById('delete-title').textContent='프로그램 삭제';
+  document.getElementById('delete-desc').innerHTML=`<strong>${p.name}</strong>을(를) 삭제할까요?<br><span style="color:var(--danger);font-size:12px">삭제 후 복구할 수 없어요.</span>`;
+  _deleteAction=async()=>{
+    progs=progs.filter(x=>x.id!==curProgId);
+    try{await apiPost({action:'delete_prog',id:curProgId});}catch{}
+    closeModal('modal-delete');
+    showPage('list');
+    renderAll();
+    toast('삭제됐어요.');
+  };
+  document.getElementById('modal-delete').classList.add('on');
+}
+function confirmDeleteReq(pid,rid,label){
+  document.getElementById('delete-title').textContent='요청 삭제';
+  document.getElementById('delete-desc').innerHTML=`<strong>${label}</strong> 요청을 삭제할까요?<br><span style="color:var(--danger);font-size:12px">삭제 후 복구할 수 없어요.</span>`;
+  _deleteAction=async()=>{
+    const p=progs.find(x=>x.id===pid);if(!p)return;
+    const reqs=p.reqs.filter(r=>r.id!==rid);
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what:`${label} 요청 삭제`,ts:Date.now()};
+    await updateProg(pid,{reqs},logEntry);
+    closeModal('modal-delete');
+    toast('삭제됐어요.');
+  };
+  document.getElementById('modal-delete').classList.add('on');
+}
+async function execDelete(){
+  if(_deleteAction)await _deleteAction();
+  _deleteAction=null;
+}
+function openReasonModal(type, desc, onConfirm){
+  _pendingAction = onConfirm;
+  document.getElementById('reason-desc').textContent = desc;
+  document.getElementById('reason-custom').value = '';
+  document.getElementById('modal-reason').classList.add('on');
+  setTimeout(()=>document.getElementById('reason-custom').focus(), 100);
+}
+
+async function confirmReason(){
+  const reason = document.getElementById('reason-custom').value.trim();
+  document.getElementById('modal-reason').classList.remove('on');
+  if(_pendingAction) await _pendingAction(reason);
+  _pendingAction = null;
+}
+
+function cancelReason(){
+  document.getElementById('modal-reason').classList.remove('on');
+  _pendingAction = null;
+}
+
+// ── INLINE EDIT ───────────────────────────────────────
+async function commitEF(pid,key,label,multi){
+  const inp=document.getElementById(`efi-${pid}-${key}`);
+  if(!inp)return;
+  const val=inp.value.trim();
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const old=p[key]||'';
+  if(val===old){cancelEF(pid,key);return;}
+  const what=old
+    ?`${label} 수정: "${old.slice(0,25)}${old.length>25?'…':''}" → "${val.slice(0,25)}${val.length>25?'…':''}"`
+    :`${label} 수정: "(없음)" → "${val.slice(0,35)}${val.length>35?'…':''}"`;
+  cancelEF(pid,key);
+  openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    if(reason) logEntry.memo=reason;
+    await updateProg(pid,{[key]:val},logEntry);
+    toast('수정됐어요.');
+  });
+}
+
+// ── REQ FIELD EDIT ────────────────────────────────────
+function startREF(pid,rid,key,multi){
+  document.getElementById(`ef-${pid}-${rid}-${key}`).classList.add('ef-editing');
+  // date/daterange/channels는 -from 또는 다른 id 구조
+  const direct=document.getElementById(`efi-${pid}-${rid}-${key}`);
+  const fromEl=document.getElementById(`efi-${pid}-${rid}-${key}-from`);
+  if(direct)direct.focus();
+  else if(fromEl)fromEl.focus();
+}
+function cancelREF(pid,rid,key){
+  document.getElementById(`ef-${pid}-${rid}-${key}`).classList.remove('ef-editing');
+}
+async function commitDateRange(pid,rid,key,label,isdt){
+  const eid=`${pid}-${rid}-${key}`;
+  const fromEl=document.getElementById(`efi-${eid}-from`);
+  const toEl=document.getElementById(`efi-${eid}-to`);
+  const textEl=document.getElementById(`efi-${eid}-text`);
+  let val='';
+  const fmt=v=>v?(isdt==='true'?v.replace('T',' ').slice(0,16):v):'';
+  const fromV=fmt(fromEl?.value);
+  const toV=toEl?fmt(toEl?.value):'';
+  const textV=textEl?.value.trim()||'';
+  if(textV) val=textV;
+  else if(fromV&&toV) val=`${fromV} ~ ${toV}`;
+  else val=fromV||toV;
+
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const r=p.reqs.find(x=>x.id===rid);
+  if(!r)return;
+  const old=r[key]||'';
+  r[key]=val;
+  const what=`${REQ_LABELS[r.type]||'요청'} · ${label} 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
+  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+  openReasonModal('status',what,async(reason)=>{
+    if(reason)logEntry.memo=reason;
+    await updateProg(pid,{reqs:p.reqs},logEntry);
+    renderDetail(p);
+  });
+}
+async function commitChannels(pid,rid){
+  const grid=document.getElementById(`efi-${pid}-${rid}-channels`);
+  if(!grid)return;
+  const checked=[...grid.querySelectorAll('input:checked')].map(i=>i.value);
+  const val=checked.join(', ');
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const r=p.reqs.find(x=>x.id===rid);
+  if(!r)return;
+  const old=r.channels||'';
+  r.channels=val;
+  const what=`콘텐츠 · 희망 채널 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
+  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+  openReasonModal('status',what,async(reason)=>{
+    if(reason)logEntry.memo=reason;
+    await updateProg(pid,{reqs:p.reqs},logEntry);
+    renderDetail(p);
+  });
+}
+async function commitREF(pid,rid,key,label,multi){
+  const inp=document.getElementById(`efi-${pid}-${rid}-${key}`);
+  if(!inp)return;
+  const val=inp.value.trim();
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const r=p.reqs.find(x=>x.id===rid);
+  if(!r)return;
+  const old=r[key]||'';
+  if(val===old){cancelREF(pid,rid,key);return;}
+  const what=old
+    ?`${REQ_LABELS[r.type]} · ${label} 수정: "${old.slice(0,25)}${old.length>25?'…':''}" → "${val.slice(0,25)}${val.length>25?'…':''}"`
+    :`${REQ_LABELS[r.type]} · ${label} 수정: "(없음)" → "${val.slice(0,35)}${val.length>35?'…':''}"`;
+  cancelREF(pid,rid,key);
+  openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
+    const reqs=p.reqs.map(x=>x.id===rid?{...x,[key]:val}:x);
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    if(reason)logEntry.memo=reason;
+    await updateProg(pid,{reqs},logEntry);
+    toast('수정됐어요.');
+  });
+}
+
+// ── REQ STATUS ────────────────────────────────────────
+async function changeReqStatus(pid,rid,val,label){
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const req=p.reqs.find(r=>r.id===rid);
+  const rtype=req?.type||'';
+  const prevLabel=stOf(req?.status||'a').l;
+  const what=`${REQ_LABELS[rtype]||'요청'} 상태: "${prevLabel}" → "${label}"`;
+  openReasonModal('status', `상태를 "${label}"으로 변경했어요. 이유를 남겨주세요.`, async(reason)=>{
+    const reqs=p.reqs.map(r=>r.id===rid?{...r,status:val}:r);
+    const logEntry={id:uid(),who:'홍보팀',what,ts:Date.now()};
+    if(reason) logEntry.memo=reason;
+    await updateProg(pid,{reqs},logEntry);
+    toast('상태가 업데이트됐어요.');
+  });
+}
+
+// ── ADD REQUEST MODAL ─────────────────────────────────
+function openAddReq(){
+  selMTypes.clear();
+  ['recruit','content','video','photo','pr','signage'].forEach(t=>{
+    document.getElementById('mtc-'+t).classList.remove('on');
+    document.getElementById('mcs-'+t).style.display='none';
+  });
+  document.querySelectorAll('#modal-add-req input[type=checkbox]').forEach(cb=>{
+    cb.checked=false;
+    cb.closest('.ch-label')?.classList.remove('checked');
+  });
+  ['mv-recruit-from','mv-recruit-to','mv-recruit-text','mv-goal','mv-link','mv-camp-note',
+   'mv-cont-from','mv-cont-text','mv-cont-body','mv-cont-desc',
+   'mv-video-from','mv-video-to','mv-video-text','mv-video-where','mv-video-note',
+   'mv-photo-from','mv-photo-to','mv-photo-text','mv-photo-where','mv-photo-note',
+   'mv-pr-from','mv-pr-text','mv-pr-body','mv-pr-note',
+   'mv-signage-from','mv-signage-to','mv-signage-text','mv-signage-purpose','mv-signage-location','mv-signage-asset'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('mtype-err').style.display='none';
+  document.getElementById('modal-add-req').classList.add('on');
+}
+
+function toggleMT(t){
+  selMTypes.has(t)?selMTypes.delete(t):selMTypes.add(t);
+  document.getElementById('mtc-'+t).classList.toggle('on',selMTypes.has(t));
+  document.getElementById('mcs-'+t).style.display=selMTypes.has(t)?'block':'none';
+  document.getElementById('mtype-err').style.display='none';
+}
+
+async function submitAddReq(){
+  if(!selMTypes.size){document.getElementById('mtype-err').style.display='block';return;}
+  if(selMTypes.has('video')&&!document.getElementById('mv-video-consent')?.checked){
+    toast('촬영 동의 체크박스를 확인해주세요.');return;
+  }
+  if(selMTypes.has('photo')&&!document.getElementById('mv-photo-consent')?.checked){
+    toast('촬영 동의 체크박스를 확인해주세요.');return;
+  }
+  if(!curProgId)return;
+  const p=progs.find(x=>x.id===curProgId);
+  if(!p)return;
+  const newReqs=[...(p.reqs||[])];
+  const logs=[];
+  selMTypes.forEach(t=>{
+    const r={id:uid(),type:t,status:'a'};
+    if(t==='recruit'){
+      r.recruit=getDateVal('mv-recruit',true,false);
+      r.goal=sv('mv-goal');r.link=sv('mv-link');r.camp_note=sv('mv-camp-note');
+    } else if(t==='content'){
+      r.channels=pills(document.getElementById('modal-ch-pills'));
+      r.cont_date=getDateVal('mv-cont',false,false);
+      r.cont_body=sv('mv-cont-body');r.cont_desc=sv('mv-cont-desc');
+    } else if(t==='video'){
+      r.video_when=getDateVal('mv-video',false,true);
+      r.video_where=sv('mv-video-where');r.video_note=sv('mv-video-note');
+    } else if(t==='photo'){
+      r.photo_when=getDateVal('mv-photo',false,true);
+      r.photo_where=sv('mv-photo-where');r.photo_note=sv('mv-photo-note');
+    } else if(t==='signage'){
+      r.signage_date=getDateVal('mv-signage',true,false);
+      r.signage_purpose=sv('mv-signage-purpose');
+      r.signage_location=sv('mv-signage-location');
+      r.signage_asset=getSignageAsset('mv-signage-asset-list');
+    } else if(t==='pr'){
+      r.pr_date=getDateVal('mv-pr',false,false);
+      r.pr_body=sv('mv-pr-body');r.pr_note=sv('mv-pr-note');
+    }
+    newReqs.push(r);
+    logs.push({id:uid(),who:getCurrentUser()||p.person||p.team,what:`${REQ_LABELS[t]} 요청 추가`,ts:Date.now()});
+  });
+  const cl=[...(p.changelog||[]),...logs];
+  await updateProg(curProgId,{reqs:newReqs},logs[0]);
+  if(logs.length>1){
+    const p2=progs.find(x=>x.id===curProgId);
+    if(p2){p2.changelog=[...(p2.changelog||[]),...logs.slice(1)];
+      if(db)try{await db.doc('progs/'+curProgId).update({changelog:p2.changelog});}catch{}}
+  }
+  closeModal('modal-add-req');
+  toast('요청이 추가됐어요.');
+}
+
+// ── AUTOCOMPLETE ──────────────────────────────────────
+function onProgInput(){
+  clrE('f-prog');
+  const q=document.getElementById('fv-prog').value.trim().toLowerCase();
+  const drop=document.getElementById('ac-drop');
+  if(!q){drop.style.display='none';return;}
+  const matches=progs.filter(p=>p.name.toLowerCase().includes(q)).slice(0,6);
+  if(!matches.length){drop.style.display='none';return;}
+  const STATUS_LABELS={a:'등록 완료',b:'협의 중',b2:'협의 완료',c:'작업 중',d:'완료',e:'보류/취소'};
+  const STATUS_COLORS={a:'#888',b:'#854f0b',c:'#185fa5',d:'#3b6d11',e:'#888'};
+  drop.innerHTML=matches.map(p=>{
+    const reqSummary=(p.reqs||[]).map(r=>{
+      const s=STATUS_LABELS[r.status]||'';
+      const c=STATUS_COLORS[r.status]||'#888';
+      return`<span class="ac-item-badge" style="background:${c}22;color:${c}">${r.type==='recruit'?'모집':r.type==='content'?'콘텐츠':r.type==='video'?'영상':'사진'} · ${s}</span>`;
+    }).join('');
+    return`<div class="ac-item" onmousedown="selectExistingProg('${p.id}')">
+      <div class="ac-item-name">${p.name}${reqSummary}</div>
+      <div class="ac-item-meta">${p.team} · ${p.person}</div>
+    </div>`;
+  }).join('')+`<div style="padding:8px 14px;font-size:11px;color:var(--text-3);border-top:0.5px solid var(--border)">위 목록에 없으면 새 프로그램으로 등록됩니다</div>`;
+  drop.style.display='block';
+}
+
+function hideAC(){
+  setTimeout(()=>{document.getElementById('ac-drop').style.display='none';},150);
+}
+
+function selectExistingProg(id){
+  document.getElementById('ac-drop').style.display='none';
+  openProg(id);
+  showPage('detail');
+}
+
+// ── NEW PROGRAM ───────────────────────────────────────
+function toggleT(t){
+  selTypes.has(t)?selTypes.delete(t):selTypes.add(t);
+  document.getElementById('tc-'+t).classList.toggle('on',selTypes.has(t));
+  document.getElementById('cs-'+t).style.display=selTypes.has(t)?'block':'none';
+  document.getElementById('type-err').style.display='none';
+}
+function togglePill(btn){btn.classList.toggle('on')}
+function clrE(id){document.getElementById(id).classList.remove('err')}
+
+async function submitProg(){
+  let ok=true;
+  if(!sv('fv-team')){document.getElementById('f-team').classList.add('err');ok=false;}
+  if(!sv('fv-person').trim()){document.getElementById('f-person').classList.add('err');ok=false;}
+  if(!sv('fv-prog').trim()){document.getElementById('f-prog').classList.add('err');ok=false;}
+  if(!selTypes.size){document.getElementById('type-err').style.display='block';ok=false;}
+  if(selTypes.has('video')&&!document.getElementById('fv-video-consent')?.checked){
+    toast('촬영 동의 체크박스를 확인해주세요.');ok=false;
+  }
+  if(selTypes.has('photo')&&!document.getElementById('fv-photo-consent')?.checked){
+    toast('촬영 동의 체크박스를 확인해주세요.');ok=false;
+  }
+  if(!ok)return;
+
+  const reqs=[];
+  const eventVal=getEventVal();
+  if(selTypes.has('recruit')){
+    reqs.push({id:uid(),type:'recruit',status:'a',
+      recruit:getDateVal('fv-recruit',true,false),
+      goal:sv('fv-goal'),link:sv('fv-link'),camp_note:sv('fv-camp-note')});
+  }
+  if(selTypes.has('content'))reqs.push({id:uid(),type:'content',status:'a',
+    channels:pills(document.getElementById('fv-channels')),
+    cont_date:getDateVal('fv-cont',false,false),
+    cont_body:sv('fv-cont-body'),cont_desc:sv('fv-cont-desc')});
+  if(selTypes.has('video'))reqs.push({id:uid(),type:'video',status:'a',
+    video_when:getDateVal('fv-video',false,true),
+    video_where:sv('fv-video-where'),video_note:sv('fv-video-note')});
+  if(selTypes.has('photo'))reqs.push({id:uid(),type:'photo',status:'a',
+    photo_when:getDateVal('fv-photo',false,true),
+    photo_where:sv('fv-photo-where'),photo_note:sv('fv-photo-note')});
+  if(selTypes.has('signage'))reqs.push({id:uid(),type:'signage',status:'a',
+    signage_date:getDateVal('fv-signage',true,false),
+    signage_purpose:sv('fv-signage-purpose'),
+    signage_location:sv('fv-signage-location'),
+    signage_asset:getSignageAsset('fv-signage-asset-list')});
+  if(selTypes.has('pr'))reqs.push({id:uid(),type:'pr',status:'a',
+    pr_date:getDateVal('fv-pr',false,false),
+    pr_body:sv('fv-pr-body'),pr_note:sv('fv-pr-note')});
+
+  const person=sv('fv-person').trim();
+  const data={
+    team:sv('fv-team'),person,name:sv('fv-prog').trim(),
+    target:sv('fv-target'),benefit:sv('fv-benefit'),event:eventVal,
+    doc:getDocLinks(),
+    reqs, createdAt:Date.now(),
+    changelog:[{id:uid(),who:person,what:'프로그램 등록',ts:Date.now()}],
+  };
+  const newId=await saveNew(data);
+  resetForm();
+  curProgId=newId;
+  renderAll();
+  openProg(newId);
+  toast('프로그램이 등록됐어요.');
+}
+
+function resetForm(){
+  selTypes.clear();
+  ['recruit','content','video','photo','pr','signage'].forEach(t=>{
+    document.getElementById('tc-'+t).classList.remove('on');
+    document.getElementById('cs-'+t).style.display='none';
+  });
+  document.querySelectorAll('.form-wrap input,.form-wrap select,.form-wrap textarea').forEach(el=>{
+    if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';
+  });
+  // doc-list 첫 번째 행만 남기고 나머지 제거
+  // 행사 일정 초기화
+  setEventMode('date');
+  const docList=document.getElementById('fv-doc-list');
+  if(docList){const rows=[...docList.children];rows.slice(1).forEach(r=>r.remove());}
+  document.querySelectorAll('#fv-channels input[type=checkbox]').forEach(cb=>{cb.checked=false;cb.closest('.ch-label').classList.remove('checked');});
+  document.querySelectorAll('.form-wrap .field.err').forEach(f=>f.classList.remove('err'));
+  document.getElementById('type-err').style.display='none';
+}
+
+// ── HISTORY ───────────────────────────────────────────
+function renderHistory(){
+  const teamF=(document.getElementById('hist-filter')||{}).value||'all';
+  // 모든 프로그램의 changelog를 하나로 모아 시간 역순 정렬
+  const all=[];
+  progs.forEach(p=>{
+    if(teamF!=='all'&&p.team!==teamF)return;
+    (p.changelog||[]).forEach(c=>{
+      all.push({...c, progName:p.name, progId:p.id, team:p.team, person:p.person});
+    });
+  });
+  all.sort((a,b)=>(b.ts||0)-(a.ts||0));
+
+  const el=document.getElementById('history-list');
+  if(!el)return;
+  if(!all.length){el.innerHTML='<div class="empty"><i class="ti ti-history"></i>변경 이력이 없어요</div>';return;}
+
+  // 날짜별로 그룹핑
+  const groups={};
+  all.forEach(c=>{
+    const d=new Date(c.ts||0);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if(!groups[key])groups[key]=[];
+    groups[key].push(c);
+  });
+
+  el.innerHTML=Object.entries(groups).map(([date,items])=>{
+    const label=formatDateLabel(date);
+    return`<div style="padding:10px 14px 4px;font-size:11px;font-weight:500;color:var(--text-2);border-bottom:0.5px solid var(--border);background:var(--surface-sub)">${label}</div>
+    ${items.map((c,i)=>`
+      <div style="display:flex;gap:10px;padding:11px 14px;border-bottom:0.5px solid var(--border);cursor:pointer" onclick="openProg('${c.progId}');showPage('detail')" class="hist-row">
+        <div style="width:6px;height:6px;border-radius:50%;background:${i===0&&date===Object.keys(groups)[0]?'var(--accent)':'var(--border-mid)'};margin-top:5px;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px">
+            <span style="font-size:13px;font-weight:500;color:var(--text)">${c.progName}</span>
+            <span style="font-size:11px;color:var(--text-2);background:var(--surface-sub);border-radius:20px;padding:1px 7px">${c.team}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-2)">${c.who} · ${(c.what||'').replace(
+            /"([^"]*)" → "([^"]*)"/g,
+            (_,a,b)=>`<span style="color:var(--text-3);text-decoration:line-through">${a||'(없음)'}</span> → <span style="color:var(--accent);font-weight:600">${b||'(없음)'}</span>`
+          )}</div>
+          ${c.memo?`<div style="font-size:12px;color:var(--text);background:var(--surface-sub);border-radius:6px;padding:4px 8px;margin-top:4px;border-left:2px solid var(--border-mid)">${c.memo}</div>`:''}
+          <div style="font-size:10px;color:var(--text-3);margin-top:3px">${rtime(c.ts||0)}</div>
+        </div>
+      </div>`).join('')}`;
+  }).join('');
+}
+
+function formatDateLabel(dateStr){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const today=new Date();
+  const target=new Date(y,m-1,d);
+  const diff=Math.floor((new Date(today.getFullYear(),today.getMonth(),today.getDate())-target)/86400000);
+  if(diff===0)return'오늘';
+  if(diff===1)return'어제';
+  if(diff<7)return`${diff}일 전`;
+  return`${y}년 ${m}월 ${d}일`;
+}
+
+// ── NAV / MODAL / TOAST ───────────────────────────────
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page-'+name).classList.add('on');
+  const ni=document.getElementById('nav-'+name);
+  if(ni)ni.classList.add('on');
+  // 신규 등록 → 하위메뉴 닫기, 그 외 → 열기
+  const p=document.getElementById('nav-parent-view');
+  const s=document.getElementById('nav-sub-view');
+  if(name==='new-prog'){
+    p&&p.classList.remove('open');
+    p&&p.classList.remove('on');
+    s&&s.classList.remove('open');
+  } else if(name==='list'||name==='detail'){
+    p&&p.classList.add('open');
+    p&&p.classList.add('on');
+    s&&s.classList.add('open');
+  } else {
+    p&&p.classList.remove('on');
+  }
+  if(name==='history')renderHistory();
+  if(name==='new-prog')prefillUserInfo();
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),3000);
+}
+
+initUsername();
+if(initToken()) initDB();
+</script>
+</body>
+</html>
