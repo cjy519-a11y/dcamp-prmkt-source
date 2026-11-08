@@ -312,7 +312,7 @@ select{cursor:pointer}
       <span id="sidebar-username" style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">–</span>
       <button onclick="openNameModal()" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;flex-shrink:0">변경</button>
     </div>
-    <button onclick="logout()" style="margin-top:8px;font-size:11px;color:var(--text-3);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:flex;align-items:center;gap:4px">
+    <button onclick="logout()" style="margin-top:8px;font-size:11px;color:var(--text-3);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:flex;align-items:center;gap:4px;position:relative;z-index:10;pointer-events:auto">
       <i class="ti ti-logout" style="font-size:12px"></i>로그아웃
     </button>
   </div>
@@ -699,8 +699,8 @@ select{cursor:pointer}
                 <button type="button" id="fv-video-tab-text" onclick="setDateMode('fv-video','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
               </span>
             </div>
-            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
-              <input type="checkbox" id="fv-video-same" onchange="toggleSameAsEvent('fv-video','fv')" style="accent-color:var(--accent)">
+            <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2);white-space:nowrap;width:fit-content">
+              <input type="checkbox" id="fv-video-same" onchange="toggleSameAsEvent('fv-video','fv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
               행사 일정과 동일
             </label>
             <div id="fv-video-date-mode" style="display:flex;align-items:center;gap:6px">
@@ -809,8 +809,8 @@ select{cursor:pointer}
                 <button type="button" id="fv-photo-tab-text" onclick="setDateMode('fv-photo','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
               </span>
             </div>
-            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
-              <input type="checkbox" id="fv-photo-same" onchange="toggleSameAsEvent('fv-photo','fv')" style="accent-color:var(--accent)">
+            <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2);white-space:nowrap;width:fit-content">
+              <input type="checkbox" id="fv-photo-same" onchange="toggleSameAsEvent('fv-photo','fv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
               행사 일정과 동일
             </label>
             <div id="fv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
@@ -994,8 +994,8 @@ select{cursor:pointer}
               <button type="button" id="mv-video-tab-text" onclick="setDateMode('mv-video','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
             </span>
           </div>
-          <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
-            <input type="checkbox" id="mv-video-same" onchange="toggleSameAsEvent('mv-video','mv')" style="accent-color:var(--accent)">
+          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2);white-space:nowrap;width:fit-content">
+            <input type="checkbox" id="mv-video-same" onchange="toggleSameAsEvent('mv-video','mv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
             행사 일정과 동일
           </label>
           <div id="mv-video-date-mode" style="display:flex;align-items:center;gap:6px">
@@ -1095,8 +1095,8 @@ select{cursor:pointer}
               <button type="button" id="mv-photo-tab-text" onclick="setDateMode('mv-photo','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
             </span>
           </div>
-          <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
-            <input type="checkbox" id="mv-photo-same" onchange="toggleSameAsEvent('mv-photo','mv')" style="accent-color:var(--accent)">
+          <label style="display:flex;align-items:center;gap:4px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2);white-space:nowrap;width:fit-content">
+            <input type="checkbox" id="mv-photo-same" onchange="toggleSameAsEvent('mv-photo','mv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
             행사 일정과 동일
           </label>
           <div id="mv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
@@ -1467,16 +1467,31 @@ async function initUsername(){
       openNameModal();
     }
   }
+  // username 확정 후 DB 로드
+  await initDB();
 }
 
 function applyUserInfo(name,team){
   updateSidebarUser(name,team);
-  // 홍마팀 아닐 때 팀 필터 기본값을 본인 팀으로 설정
+  // 팀 필터 기본값을 본인 팀으로 설정 (홍마팀이면 전체)
   if(team&&team!=='홍보마케팅팀'){
     curTeam=team;
     const dd=document.getElementById('dd-team');
     if(dd)dd.value=team;
+  } else {
+    curTeam='';
+    const dd=document.getElementById('dd-team');
+    if(dd)dd.value='';
   }
+}
+
+function logout(){
+  localStorage.removeItem('dcamp_username');
+  localStorage.removeItem('dcamp_userteam');
+  curTeam='';
+  const dd=document.getElementById('dd-team');
+  if(dd)dd.value='';
+  openNameModal();
 }
 function prefillUserInfo(){
   const name=getCurrentUser(), team=getCurrentTeam();
@@ -1503,13 +1518,7 @@ async function initDB(){
     if(data.error){showOfflineBanner();loadDemo();return;}
     progs = data.progs||[];
     progs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-    // 로그인 팀 기준으로 팀 필터 기본값 설정
-    const myTeam=getCurrentTeam();
-    if(myTeam&&myTeam!=='홍보마케팅팀'){
-      curTeam=myTeam;
-      const dd=document.getElementById('dd-team');
-      if(dd)dd.value=myTeam;
-    }
+    // curTeam은 initUsername→applyUserInfo에서 이미 설정됨
     renderAll();
   }catch(e){showOfflineBanner();loadDemo();}
 }
@@ -1813,9 +1822,8 @@ function renderAll(){
 }
 
 function getVisibleProgs(){
-  const myTeam=getCurrentTeam();
-  if(!myTeam||myTeam==='홍보마케팅팀') return progs;
-  return progs.filter(p=>p.team===myTeam);
+  if(!curTeam) return progs;
+  return progs.filter(p=>p.team===curTeam);
 }
 
 function renderStats(){
@@ -1946,7 +1954,6 @@ function renderList(){
   const q=(document.getElementById('q')||{}).value.toLowerCase();
   let data=getVisibleProgs().filter(p=>{
     if(q&&!p.name.toLowerCase().includes(q))return false;
-    if(curTeam&&p.team!==curTeam)return false;
     if(curFilter==='active')return p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e'&&r.status!=='f');
     if(curFilter==='done')return p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d');
     if(curFilter==='hold')return p.reqs&&p.reqs.some(r=>r.status==='e');
@@ -2840,7 +2847,6 @@ document.getElementById('sidebar').addEventListener('click', function(e){
 });
 
 initUsername();
-initDB();
 </script>
 </body>
 </html>
