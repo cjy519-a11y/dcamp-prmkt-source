@@ -354,29 +354,29 @@ select{cursor:pointer}
         <select id="dd-team" onchange="setDropFilter()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text-2);cursor:pointer;font-family:inherit">
           <option value="">팀 전체</option>
           <optgroup label="사업실">
-            <option>biz ops</option>
-            <option>growth</option>
-            <option>space</option>
-            <option>resource</option>
+            <option value="biz ops">biz ops</option>
+            <option value="growth">growth</option>
+            <option value="space">space</option>
+            <option value="resource">resource</option>
           </optgroup>
           <optgroup label="글로벌사업실">
-            <option>글로벌사업팀</option>
+            <option value="글로벌사업팀">글로벌사업팀</option>
           </optgroup>
           <optgroup label="투자실">
-            <option>펀드팀</option>
-            <option>투자팀</option>
-            <option>투자전략팀</option>
+            <option value="펀드팀">펀드팀</option>
+            <option value="투자팀">투자팀</option>
+            <option value="투자전략팀">투자전략팀</option>
           </optgroup>
           <optgroup label="경영지원본부 · 기획실">
-            <option>전략팀</option>
-            <option>IT팀</option>
-            <option>홍보마케팅팀</option>
+            <option value="전략팀">전략팀</option>
+            <option value="IT팀">IT팀</option>
+            <option value="홍보마케팅팀">홍보마케팅팀</option>
           </optgroup>
           <optgroup label="경영지원본부 · 인사실">
-            <option>인사팀</option>
+            <option value="인사팀">인사팀</option>
           </optgroup>
           <optgroup label="경영지원본부">
-            <option>재무팀</option>
+            <option value="재무팀">재무팀</option>
           </optgroup>
         </select>
         <input type="search" placeholder="건명 검색…" id="q" oninput="renderList()" style="flex:1;min-width:160px">
@@ -699,6 +699,10 @@ select{cursor:pointer}
                 <button type="button" id="fv-video-tab-text" onclick="setDateMode('fv-video','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
               </span>
             </div>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
+              <input type="checkbox" id="fv-video-same" onchange="toggleSameAsEvent('fv-video','fv')" style="accent-color:var(--accent)">
+              행사 일정과 동일
+            </label>
             <div id="fv-video-date-mode" style="display:flex;align-items:center;gap:6px">
               <input id="fv-video-from" type="datetime-local" style="flex:1;font-size:12px">
               <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
@@ -805,6 +809,10 @@ select{cursor:pointer}
                 <button type="button" id="fv-photo-tab-text" onclick="setDateMode('fv-photo','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
               </span>
             </div>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
+              <input type="checkbox" id="fv-photo-same" onchange="toggleSameAsEvent('fv-photo','fv')" style="accent-color:var(--accent)">
+              행사 일정과 동일
+            </label>
             <div id="fv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
               <input id="fv-photo-from" type="datetime-local" style="flex:1;font-size:12px">
               <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
@@ -986,6 +994,10 @@ select{cursor:pointer}
               <button type="button" id="mv-video-tab-text" onclick="setDateMode('mv-video','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
             </span>
           </div>
+          <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
+            <input type="checkbox" id="mv-video-same" onchange="toggleSameAsEvent('mv-video','mv')" style="accent-color:var(--accent)">
+            행사 일정과 동일
+          </label>
           <div id="mv-video-date-mode" style="display:flex;align-items:center;gap:6px">
             <input id="mv-video-from" type="datetime-local" style="flex:1;font-size:12px">
             <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
@@ -1083,6 +1095,10 @@ select{cursor:pointer}
               <button type="button" id="mv-photo-tab-text" onclick="setDateMode('mv-photo','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
             </span>
           </div>
+          <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer;font-weight:400;font-size:12px;color:var(--text-2)">
+            <input type="checkbox" id="mv-photo-same" onchange="toggleSameAsEvent('mv-photo','mv')" style="accent-color:var(--accent)">
+            행사 일정과 동일
+          </label>
           <div id="mv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
             <input id="mv-photo-from" type="datetime-local" style="flex:1;font-size:12px">
             <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
@@ -1248,6 +1264,32 @@ function renderDocVal(val,key){
   }).join('');
 }
 // ── DATE COMPONENT ────────────────────────────────────
+function toggleSameAsEvent(prefix, formPrefix){
+  const cb = document.getElementById(prefix+'-same');
+  const checked = cb && cb.checked;
+  let eventVal = '';
+  if(formPrefix === 'fv'){
+    // 신규 등록 폼: fv-event 필드에서 가져오기
+    const dm = document.getElementById('fv-event-date-mode');
+    const isDateMode = !dm || dm.style.display !== 'none';
+    if(isDateMode){
+      const f = sv('fv-event-from'), t = sv('fv-event-to');
+      if(f&&t) eventVal = f+' ~ '+t; else eventVal = f||t;
+    } else { eventVal = sv('fv-event-text'); }
+  } else if(formPrefix === 'mv'){
+    // 요청 추가 모달: 현재 열려있는 프로그램의 event 값
+    const p = progs.find(x=>x.id===curProgId);
+    if(p) eventVal = p.event || '';
+  }
+  const textEl = document.getElementById(prefix+'-text');
+  if(checked){
+    setDateMode(prefix,'text');
+    if(textEl){ textEl.value = eventVal || '행사 일정과 동일'; textEl.disabled = true; }
+  } else {
+    if(textEl){ textEl.disabled = false; textEl.value = ''; }
+    setDateMode(prefix,'date');
+  }
+}
 function setDateMode(prefix, mode){
   const dm=document.getElementById(prefix+'-date-mode');
   const tm=document.getElementById(prefix+'-text-mode');
@@ -1402,12 +1444,20 @@ function saveName(){
 function updateSidebarUser(name,team){
   const el=document.getElementById('sidebar-username');
   if(el)el.textContent=team?`${team} ${name}`:name;
+  // progs가 로드된 경우에만 재렌더
+  if(progs.length>0) renderAll();
 }
 function initUsername(){
   const name=getCurrentUser();
   const team=getCurrentTeam();
   if(name){
     updateSidebarUser(name,team);
+    // 홍마팀 아닐 때 팀 필터 기본값을 본인 팀으로 설정
+    if(team&&team!=='홍보마케팅팀'){
+      curTeam=team;
+      const dd=document.getElementById('dd-team');
+      if(dd)dd.value=team;
+    }
   } else {
     openNameModal();
   }
@@ -1437,6 +1487,13 @@ async function initDB(){
     if(data.error){showOfflineBanner();loadDemo();return;}
     progs = data.progs||[];
     progs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    // 로그인 팀 기준으로 팀 필터 기본값 설정
+    const myTeam=getCurrentTeam();
+    if(myTeam&&myTeam!=='홍보마케팅팀'){
+      curTeam=myTeam;
+      const dd=document.getElementById('dd-team');
+      if(dd)dd.value=myTeam;
+    }
     renderAll();
   }catch(e){showOfflineBanner();loadDemo();}
 }
@@ -1739,20 +1796,28 @@ function renderAll(){
   renderNavCounts();
 }
 
+function getVisibleProgs(){
+  const myTeam=getCurrentTeam();
+  if(!myTeam||myTeam==='홍보마케팅팀') return progs;
+  return progs.filter(p=>p.team===myTeam);
+}
+
 function renderStats(){
-  document.getElementById('st-total').textContent=progs.length;
-  const active=progs.filter(p=>p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e'));
+  const vp=getVisibleProgs();
+  document.getElementById('st-total').textContent=vp.length;
+  const active=vp.filter(p=>p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e'));
   document.getElementById('st-active').textContent=active.length;
   const week=Date.now()-86400000*7;
-  const changed=progs.filter(p=>p.changelog&&p.changelog.some(c=>c.ts>week));
+  const changed=vp.filter(p=>p.changelog&&p.changelog.some(c=>c.ts>week));
   document.getElementById('st-changed').textContent=changed.length;
-  document.getElementById('st-done').textContent=progs.filter(p=>p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d')).length;
+  document.getElementById('st-done').textContent=vp.filter(p=>p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d')).length;
 }
 
 function renderNavCounts(){
-  const all=document.getElementById('fc-all'); if(all)all.textContent=progs.length;
-  const active=document.getElementById('fc-active'); if(active)active.textContent=progs.filter(p=>p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e')).length;
-  const done=document.getElementById('fc-done'); if(done)done.textContent=progs.filter(p=>p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d')).length;
+  const vp=getVisibleProgs();
+  const all=document.getElementById('fc-all'); if(all)all.textContent=vp.length;
+  const active=document.getElementById('fc-active'); if(active)active.textContent=vp.filter(p=>p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e')).length;
+  const done=document.getElementById('fc-done'); if(done)done.textContent=vp.filter(p=>p.reqs&&p.reqs.length>0&&p.reqs.every(r=>r.status==='d')).length;
 }
 
 function setSort(key){
@@ -1863,7 +1928,7 @@ function setF(btn,f){
 
 function renderList(){
   const q=(document.getElementById('q')||{}).value.toLowerCase();
-  let data=progs.filter(p=>{
+  let data=getVisibleProgs().filter(p=>{
     if(q&&!p.name.toLowerCase().includes(q))return false;
     if(curTeam&&p.team!==curTeam)return false;
     if(curFilter==='active')return p.reqs&&p.reqs.some(r=>r.status!=='d'&&r.status!=='e'&&r.status!=='f');
@@ -2459,7 +2524,10 @@ function openAddReq(){
    'mv-photo-from','mv-photo-to','mv-photo-text','mv-photo-where','mv-photo-note',
    'mv-pr-from','mv-pr-text','mv-pr-body','mv-pr-note',
    'mv-signage-from','mv-signage-to','mv-signage-text','mv-signage-purpose','mv-signage-location','mv-signage-asset'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
+    const el=document.getElementById(id);if(el){el.value='';el.disabled=false;}
+  });
+  ['mv-video-same','mv-photo-same'].forEach(id=>{
+    const cb=document.getElementById(id);if(cb)cb.checked=false;
   });
   document.getElementById('mtype-err').style.display='none';
   document.getElementById('modal-add-req').classList.add('on');
@@ -2640,6 +2708,8 @@ function resetForm(){
   document.querySelectorAll('#fv-channels input[type=checkbox]').forEach(cb=>{cb.checked=false;cb.closest('.ch-label').classList.remove('checked');});
   document.querySelectorAll('.form-wrap .field.err').forEach(f=>f.classList.remove('err'));
   document.getElementById('type-err').style.display='none';
+  // 행사 일정과 동일 체크박스 초기화
+  ['fv-video-text','fv-photo-text'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false;});
 }
 
 // ── HISTORY ───────────────────────────────────────────
