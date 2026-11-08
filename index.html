@@ -1436,7 +1436,6 @@ function saveName(){
   try{
     localStorage.setItem('dcamp_username',name);
     localStorage.setItem('dcamp_userteam',team);
-    localStorage.removeItem('dcamp_manual_login'); // 플래그 초기화
   }catch{}
   applyUserInfo(name,team);
   document.getElementById('modal-name').classList.remove('on');
@@ -1451,26 +1450,12 @@ function updateSidebarUser(name,team){
 async function initUsername(){
   const name=getCurrentUser();
   const team=getCurrentTeam();
-  const manualMode=localStorage.getItem('dcamp_manual_login');
   if(name){
+    // 이전에 선택한 이름/팀이 localStorage에 있으면 그대로 사용
     applyUserInfo(name,team);
-  } else if(manualMode){
-    // 로그아웃 후 → 자동 로그인 건너뛰고 수동 모달
-    openNameModal();
   } else {
-    // 구글 계정으로 자동 로그인 시도
-    try{
-      const res=await apiGet({action:'whoami'});
-      if(res&&res.name){
-        localStorage.setItem('dcamp_username',res.name);
-        localStorage.setItem('dcamp_userteam',res.team||'');
-        applyUserInfo(res.name,res.team||'');
-      } else {
-        openNameModal();
-      }
-    }catch(e){
-      openNameModal();
-    }
+    // 처음 접속 or 로그아웃 후 → 수동 선택 모달
+    openNameModal();
   }
   // username 확정 후 DB 로드
   await initDB();
@@ -1493,9 +1478,10 @@ function applyUserInfo(name,team){
 function logout(){
   localStorage.removeItem('dcamp_username');
   localStorage.removeItem('dcamp_userteam');
-  localStorage.setItem('dcamp_manual_login','1');
-  // 구글 계정 전환 페이지로 이동 (새 탭)
-  window.open('https://accounts.google.com/AccountChooser','_blank');
+  curTeam='';
+  const dd=document.getElementById('dd-team');
+  if(dd)dd.value='';
+  openNameModal();
 }
 function prefillUserInfo(){
   const name=getCurrentUser(), team=getCurrentTeam();
