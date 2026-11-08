@@ -1447,19 +1447,35 @@ function updateSidebarUser(name,team){
   // progs가 로드된 경우에만 재렌더
   if(progs.length>0) renderAll();
 }
-function initUsername(){
+async function initUsername(){
   const name=getCurrentUser();
   const team=getCurrentTeam();
   if(name){
-    updateSidebarUser(name,team);
-    // 홍마팀 아닐 때 팀 필터 기본값을 본인 팀으로 설정
-    if(team&&team!=='홍보마케팅팀'){
-      curTeam=team;
-      const dd=document.getElementById('dd-team');
-      if(dd)dd.value=team;
-    }
+    applyUserInfo(name,team);
   } else {
-    openNameModal();
+    // 구글 계정으로 자동 로그인 시도
+    try{
+      const res=await apiGet({action:'whoami'});
+      if(res&&res.name){
+        localStorage.setItem('dcamp_username',res.name);
+        localStorage.setItem('dcamp_userteam',res.team||'');
+        applyUserInfo(res.name,res.team||'');
+      } else {
+        openNameModal();
+      }
+    }catch(e){
+      openNameModal();
+    }
+  }
+}
+
+function applyUserInfo(name,team){
+  updateSidebarUser(name,team);
+  // 홍마팀 아닐 때 팀 필터 기본값을 본인 팀으로 설정
+  if(team&&team!=='홍보마케팅팀'){
+    curTeam=team;
+    const dd=document.getElementById('dd-team');
+    if(dd)dd.value=team;
   }
 }
 function prefillUserInfo(){
