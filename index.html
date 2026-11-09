@@ -312,9 +312,6 @@ select{cursor:pointer}
       <span id="sidebar-username" style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">–</span>
       <button onclick="openNameModal()" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;flex-shrink:0">변경</button>
     </div>
-    <button onclick="logout()" style="margin-top:8px;font-size:11px;color:var(--text-3);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:flex;align-items:center;gap:4px;position:relative;z-index:10;pointer-events:auto">
-      <i class="ti ti-logout" style="font-size:12px"></i>로그아웃
-    </button>
   </div>
 </nav>
 
@@ -352,32 +349,26 @@ select{cursor:pointer}
           <option value="signage">사이니지</option>
         </select>
         <select id="dd-team" onchange="setDropFilter()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text-2);cursor:pointer;font-family:inherit">
-          <option value="">팀 전체</option>
-          <optgroup label="사업실">
-            <option value="biz ops">biz ops</option>
-            <option value="growth">growth</option>
-            <option value="space">space</option>
-            <option value="resource">resource</option>
-          </optgroup>
-          <optgroup label="글로벌사업실">
-            <option value="글로벌사업팀">글로벌사업팀</option>
-          </optgroup>
-          <optgroup label="투자실">
-            <option value="펀드팀">펀드팀</option>
-            <option value="투자팀">투자팀</option>
-            <option value="투자전략팀">투자전략팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부 · 기획실">
-            <option value="전략팀">전략팀</option>
-            <option value="IT팀">IT팀</option>
-            <option value="홍보마케팅팀">홍보마케팅팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부 · 인사실">
-            <option value="인사팀">인사팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부">
-            <option value="재무팀">재무팀</option>
-          </optgroup>
+          <option value="">전체</option>
+          <option value="사업실" style="font-weight:700">◆ 사업실</option>
+          <option value="biz ops">　· biz ops</option>
+          <option value="growth">　· growth</option>
+          <option value="space">　· space</option>
+          <option value="resource">　· resource</option>
+          <option value="글로벌사업실" style="font-weight:700">◆ 글로벌사업실</option>
+          <option value="글로벌사업팀">　· 글로벌사업팀</option>
+          <option value="투자실" style="font-weight:700">◆ 투자실</option>
+          <option value="펀드팀">　· 펀드팀</option>
+          <option value="투자팀">　· 투자팀</option>
+          <option value="투자전략팀">　· 투자전략팀</option>
+          <option value="경영지원본부" style="font-weight:700">◆ 경영지원본부</option>
+          <option value="경영지원본부·기획실" style="font-weight:600">　▸ 기획실</option>
+          <option value="전략팀">　　· 전략팀</option>
+          <option value="IT팀">　　· IT팀</option>
+          <option value="홍보마케팅팀">　　· 홍보마케팅팀</option>
+          <option value="경영지원본부·인사실" style="font-weight:600">　▸ 인사실</option>
+          <option value="인사팀">　　· 인사팀</option>
+          <option value="재무팀">　· 재무팀</option>
         </select>
         <input type="search" placeholder="건명 검색…" id="q" oninput="renderList()" style="flex:1;min-width:160px">
       </div>
@@ -450,31 +441,25 @@ select{cursor:pointer}
       <div style="display:flex;gap:8px;align-items:center">
         <select id="hist-filter" onchange="renderHistory()" style="font-size:13px;padding:6px 10px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface)">
           <option value="all">전체</option>
-          <optgroup label="사업실">
-            <option value="biz ops">biz ops</option>
-            <option value="growth">growth</option>
-            <option value="space">space</option>
-            <option value="resource">resource</option>
-          </optgroup>
-          <optgroup label="글로벌사업실">
-            <option value="글로벌사업팀">글로벌사업팀</option>
-          </optgroup>
-          <optgroup label="투자실">
-            <option value="펀드팀">펀드팀</option>
-            <option value="투자팀">투자팀</option>
-            <option value="투자전략팀">투자전략팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부 · 기획실">
-            <option value="전략팀">전략팀</option>
-            <option value="IT팀">IT팀</option>
-            <option value="홍보마케팅팀">홍보마케팅팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부 · 인사실">
-            <option value="인사팀">인사팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부">
-            <option value="재무팀">재무팀</option>
-          </optgroup>
+          <option value="사업실" style="font-weight:700">◆ 사업실</option>
+          <option value="biz ops">　· biz ops</option>
+          <option value="growth">　· growth</option>
+          <option value="space">　· space</option>
+          <option value="resource">　· resource</option>
+          <option value="글로벌사업실" style="font-weight:700">◆ 글로벌사업실</option>
+          <option value="글로벌사업팀">　· 글로벌사업팀</option>
+          <option value="투자실" style="font-weight:700">◆ 투자실</option>
+          <option value="펀드팀">　· 펀드팀</option>
+          <option value="투자팀">　· 투자팀</option>
+          <option value="투자전략팀">　· 투자전략팀</option>
+          <option value="경영지원본부" style="font-weight:700">◆ 경영지원본부</option>
+          <option value="경영지원본부·기획실" style="font-weight:600">　▸ 기획실</option>
+          <option value="전략팀">　　· 전략팀</option>
+          <option value="IT팀">　　· IT팀</option>
+          <option value="홍보마케팅팀">　　· 홍보마케팅팀</option>
+          <option value="경영지원본부·인사실" style="font-weight:600">　▸ 인사실</option>
+          <option value="인사팀">　　· 인사팀</option>
+          <option value="재무팀">　· 재무팀</option>
         </select>
       </div>
     </div>
@@ -1136,32 +1121,26 @@ select{cursor:pointer}
         <label>소속팀</label>
         <select id="name-team" style="font-size:13px">
           <option value="">선택</option>
-          <optgroup label="사업실">
-            <option>biz ops</option>
-            <option>growth</option>
-            <option>space</option>
-            <option>resource</option>
-          </optgroup>
-          <optgroup label="글로벌사업실">
-            <option>글로벌사업팀</option>
-          </optgroup>
-          <optgroup label="투자실">
-            <option>펀드팀</option>
-            <option>투자팀</option>
-            <option>투자전략팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부 · 기획실">
-            <option>전략팀</option>
-            <option>IT팀</option>
-            <option>홍보마케팅팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부 · 인사실">
-            <option>인사팀</option>
-          </optgroup>
-          <optgroup label="경영지원본부">
-            <option>재무팀</option>
-          </optgroup>
-          <option>기타</option>
+          <option value="사업실" style="font-weight:700">◆ 사업실</option>
+          <option value="biz ops">　· biz ops</option>
+          <option value="growth">　· growth</option>
+          <option value="space">　· space</option>
+          <option value="resource">　· resource</option>
+          <option value="글로벌사업실" style="font-weight:700">◆ 글로벌사업실</option>
+          <option value="글로벌사업팀">　· 글로벌사업팀</option>
+          <option value="투자실" style="font-weight:700">◆ 투자실</option>
+          <option value="펀드팀">　· 펀드팀</option>
+          <option value="투자팀">　· 투자팀</option>
+          <option value="투자전략팀">　· 투자전략팀</option>
+          <option value="경영지원본부" style="font-weight:700">◆ 경영지원본부</option>
+          <option value="경영지원본부·기획실" style="font-weight:600">　▸ 기획실</option>
+          <option value="전략팀">　　· 전략팀</option>
+          <option value="IT팀">　　· IT팀</option>
+          <option value="홍보마케팅팀">　　· 홍보마케팅팀</option>
+          <option value="경영지원본부·인사실" style="font-weight:600">　▸ 인사실</option>
+          <option value="인사팀">　　· 인사팀</option>
+          <option value="재무팀">　· 재무팀</option>
+          <option value="기타">기타</option>
         </select>
       </div>
       <div class="field" style="margin-bottom:0">
@@ -1202,6 +1181,22 @@ let curTypeFilter = 'all';
 let curTeam = '';
 let curSort = 'createdAt';
 let curSortDir = 'desc'; // 'asc' | 'desc'
+
+// 본부/실 → 하위 팀 계층 맵
+const ORG_GROUPS = {
+  '사업실':           ['biz ops','growth','space','resource'],
+  '글로벌사업실':     ['글로벌사업팀'],
+  '투자실':           ['펀드팀','투자팀','투자전략팀'],
+  '경영지원본부':     ['전략팀','IT팀','홍보마케팅팀','인사팀','재무팀'],
+  '경영지원본부·기획실': ['전략팀','IT팀','홍보마케팅팀'],
+  '경영지원본부·인사실': ['인사팀'],
+};
+// 선택값 → 실제 팀 목록 반환 (팀이면 [팀], 본부/실이면 하위 팀 배열, 전체면 null)
+function expandTeam(val){
+  if(!val) return null;
+  if(ORG_GROUPS[val]) return ORG_GROUPS[val];
+  return [val];
+}
 let selTypes = new Set();
 let selMTypes = new Set();
 
@@ -1461,10 +1456,13 @@ async function initUsername(){
   await initDB();
 }
 
+// 접속 시 전체 보이게 할 팀 (관리자/홍마팀/기타)
+const SHOW_ALL_TEAMS = ['홍보마케팅팀','기타',''];
+
 function applyUserInfo(name,team){
   updateSidebarUser(name,team);
-  // 팀 필터 기본값을 본인 팀으로 설정 (홍마팀이면 전체)
-  if(team&&team!=='홍보마케팅팀'){
+  // 홍마팀·기타·미선택이면 전체 보이게, 나머지는 본인 팀 필터
+  if(team && !SHOW_ALL_TEAMS.includes(team)){
     curTeam=team;
     const dd=document.getElementById('dd-team');
     if(dd)dd.value=team;
@@ -1475,14 +1473,6 @@ function applyUserInfo(name,team){
   }
 }
 
-function logout(){
-  localStorage.removeItem('dcamp_username');
-  localStorage.removeItem('dcamp_userteam');
-  curTeam='';
-  const dd=document.getElementById('dd-team');
-  if(dd)dd.value='';
-  openNameModal();
-}
 function prefillUserInfo(){
   const name=getCurrentUser(), team=getCurrentTeam();
   if(team){const t=document.getElementById('fv-team');if(t)t.value=team;}
@@ -1812,8 +1802,9 @@ function renderAll(){
 }
 
 function getVisibleProgs(){
-  if(!curTeam) return progs;
-  return progs.filter(p=>p.team===curTeam);
+  const teams=expandTeam(curTeam);
+  if(!teams) return progs;
+  return progs.filter(p=>teams.includes(p.team));
 }
 
 function renderStats(){
@@ -2275,7 +2266,7 @@ async function commitEventEF(pid){
   const what=`행사 일정 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
   cancelEF(pid,'event');
   openReasonModal('field','행사 일정을 수정했어요.',async(reason)=>{
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{event:val},logEntry);
     toast('수정됐어요.');
@@ -2301,7 +2292,7 @@ async function commitDocEF(pid){
   const what=`관련 자료 수정`;
   cancelEF(pid,'doc');
   openReasonModal('field','관련 자료를 수정했어요.',async(reason)=>{
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{doc:val},logEntry);toast('수정됐어요.');
   });
@@ -2323,7 +2314,7 @@ async function submitComment(){
   if(!val||!curProgId)return;
   const p=progs.find(x=>x.id===curProgId);
   if(!p)return;
-  const logEntry={id:uid(),who:getCurrentUser()||'💬 댓글',what:val,ts:Date.now(),isComment:true};
+  const logEntry={id:uid(),who:getCurrentUser()||p?.person||'💬 댓글',what:val,ts:Date.now(),isComment:true};
   const cl=[...(p.changelog||[]),logEntry];
   p.changelog=cl;
   try{await apiPost({action:'update_prog',id:curProgId,patch:{changelog:cl},log:logEntry});}catch(e){}
@@ -2369,7 +2360,7 @@ function confirmDeleteReq(pid,rid,label){
   _deleteAction=async()=>{
     const p=progs.find(x=>x.id===pid);if(!p)return;
     const reqs=p.reqs.filter(r=>r.id!==rid);
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what:`${label} 요청 삭제`,ts:Date.now()};
+    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what:`${label} 요청 삭제`,ts:Date.now()};
     await updateProg(pid,{reqs},logEntry);
     closeModal('modal-delete');
     toast('삭제됐어요.');
@@ -2414,7 +2405,7 @@ async function commitEF(pid,key,label,multi){
     :`${label} 수정: "(없음)" → "${val.slice(0,35)}${val.length>35?'…':''}"`;
   cancelEF(pid,key);
   openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
     if(reason) logEntry.memo=reason;
     await updateProg(pid,{[key]:val},logEntry);
     toast('수정됐어요.');
@@ -2454,7 +2445,7 @@ async function commitDateRange(pid,rid,key,label,isdt){
   const old=r[key]||'';
   r[key]=val;
   const what=`${REQ_LABELS[r.type]||'요청'} · ${label} 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
-  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+  const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
   openReasonModal('status',what,async(reason)=>{
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs:p.reqs},logEntry);
@@ -2473,7 +2464,7 @@ async function commitChannels(pid,rid){
   const old=r.channels||'';
   r.channels=val;
   const what=`콘텐츠 · 희망 채널 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
-  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+  const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
   openReasonModal('status',what,async(reason)=>{
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs:p.reqs},logEntry);
@@ -2496,7 +2487,7 @@ async function commitREF(pid,rid,key,label,multi){
   cancelREF(pid,rid,key);
   openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
     const reqs=p.reqs.map(x=>x.id===rid?{...x,[key]:val}:x);
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs},logEntry);
     toast('수정됐어요.');
@@ -2591,7 +2582,7 @@ async function submitAddReq(){
       r.pr_body=sv('mv-pr-body');r.pr_note=sv('mv-pr-note');
     }
     newReqs.push(r);
-    logs.push({id:uid(),who:getCurrentUser()||p.person||p.team,what:`${REQ_LABELS[t]} 요청 추가`,ts:Date.now()});
+    logs.push({id:uid(),who:p.person||getCurrentUser()||p.team,what:`${REQ_LABELS[t]} 요청 추가`,ts:Date.now()});
   });
   const cl=[...(p.changelog||[]),...logs];
   await updateProg(curProgId,{reqs:newReqs},logs[0]);
@@ -2694,7 +2685,7 @@ async function submitProg(){
     target:sv('fv-target'),benefit:sv('fv-benefit'),event:eventVal,
     doc:getDocLinks(),
     reqs, createdAt:Date.now(),
-    changelog:[{id:uid(),who:person,what:'프로그램 등록',ts:Date.now()}],
+    changelog:[{id:uid(),who:getCurrentUser()||person,what:'프로그램 등록',ts:Date.now()}],
   };
   const newId=await saveNew(data);
   resetForm();
@@ -2728,10 +2719,11 @@ function resetForm(){
 // ── HISTORY ───────────────────────────────────────────
 function renderHistory(){
   const teamF=(document.getElementById('hist-filter')||{}).value||'all';
+  const histTeams=teamF==='all'?null:expandTeam(teamF);
   // 모든 프로그램의 changelog를 하나로 모아 시간 역순 정렬
   const all=[];
   progs.forEach(p=>{
-    if(teamF!=='all'&&p.team!==teamF)return;
+    if(histTeams&&!histTeams.includes(p.team))return;
     (p.changelog||[]).forEach(c=>{
       all.push({...c, progName:p.name, progId:p.id, team:p.team, person:p.person});
     });
