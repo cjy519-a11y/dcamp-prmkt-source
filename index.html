@@ -631,9 +631,15 @@ select{cursor:pointer}
               <input id="fv-recruit-text" type="text" placeholder="예: 10월 중 / 11월 초 예정 / 미정">
             </div>
           </div>
-          <div class="row2">
-            <div class="field"><label>모집 목표 <span class="hint">(KPI)</span></label><input id="fv-goal" placeholder="예: 90명"></div>
-            <div class="field"><label>모집 링크 <span class="hint">모집 3일 전 공유</span></label><input id="fv-link" placeholder="https://dcamp.kr/…"></div>
+          <div class="field"><label>모집 목표 <span class="hint">(KPI)</span></label><input id="fv-goal" placeholder="예: 90명"></div>
+          <div class="field">
+            <label>모집 링크 <span class="hint">모집 3일 전 공유</span></label>
+            <div id="fv-link-list" style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="url" placeholder="https://dcamp.kr/…" style="flex:1" class="recruit-link-url">
+                <button type="button" onclick="addRecruitLinkField('fv-link-list')" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--accent)">+</button>
+              </div>
+            </div>
           </div>
           <div class="field">
             <label>모집 관련 참고사항</label>
@@ -965,9 +971,15 @@ select{cursor:pointer}
             <input id="mv-recruit-text" type="text" placeholder="예: 10월 중 / 미정">
           </div>
         </div>
-        <div class="row2">
-          <div class="field"><label>모집 목표 <span class="hint">(KPI)</span></label><input id="mv-goal" placeholder="예: 90명"></div>
-          <div class="field"><label>모집 링크 <span class="hint">모집 3일 전 공유</span></label><input id="mv-link" placeholder="https://dcamp.kr/…"></div>
+        <div class="field"><label>모집 목표 <span class="hint">(KPI)</span></label><input id="mv-goal" placeholder="예: 90명"></div>
+        <div class="field">
+          <label>모집 링크 <span class="hint">모집 3일 전 공유</span></label>
+          <div id="mv-link-list" style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="url" placeholder="https://dcamp.kr/…" style="flex:1" class="recruit-link-url">
+              <button type="button" onclick="addRecruitLinkField('mv-link-list')" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--accent)">+</button>
+            </div>
+          </div>
         </div>
         <div class="field"><label>모집 관련 참고사항</label><textarea id="mv-camp-note" placeholder="예: 인지도 제고에 집중해주세요&#10;예: 타깃 모집에 집중해주세요"></textarea></div>
       </div>
@@ -1284,7 +1296,7 @@ const PROG_FIELDS = [
 ];
 const REQ_LABELS = {pr:'언론홍보', recruit:'모집', content:'콘텐츠', video:'현장 스케치 영상', photo:'사진촬영', signage:'사이니지'};
 const REQ_FIELDS = {
-  recruit:  [{key:'recruit',label:'모집 기간',type:'daterange'},{key:'goal',label:'모집 목표'},{key:'link',label:'모집 링크'},{key:'camp_note',label:'모집 관련 참고사항',multi:true}],
+  recruit:  [{key:'recruit',label:'모집 기간',type:'daterange'},{key:'goal',label:'모집 목표'},{key:'link',label:'모집 링크',type:'links'},{key:'camp_note',label:'모집 관련 참고사항',multi:true}],
   content:  [{key:'channels',label:'희망 채널',type:'channels'},{key:'cont_date',label:'게재 희망일',type:'date'},{key:'cont_body',label:'주요 내용',multi:true},{key:'cont_desc',label:'콘텐츠 관련 참고사항',multi:true}],
   video:    [{key:'video_when',label:'촬영 일시',type:'datetimerange'},{key:'video_where',label:'촬영 장소'},{key:'video_note',label:'촬영 관련 참고사항',multi:true}],
   photo:    [{key:'photo_when',label:'촬영 일시',type:'datetimerange'},{key:'photo_where',label:'촬영 장소'},{key:'photo_note',label:'촬영 관련 참고사항',multi:true}],
@@ -1305,6 +1317,13 @@ function fmtDate(val){
   return val;
 }
 function renderDocVal(val,key){
+  if(key==='link'){
+    return val.split('\n').map(line=>{
+      const t=line.trim();
+      if(!t)return'';
+      return`<a href="${t}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:block;font-size:12px;word-break:break-all;margin-bottom:2px">${t}</a>`;
+    }).join('');
+  }
   if(key!=='doc')return fmtDate(val).replace(/\n/g,'<br>');
   return val.split('\n').map(line=>{
     const t=line.trim();
@@ -1465,6 +1484,47 @@ function getEventVal(){
     return fStr||tStr;
   }
   return sv('fv-event-text');
+}
+function addRecruitLinkField(listId){
+  const list=document.getElementById(listId);
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:6px;align-items:center';
+  row.innerHTML=`<input type="url" placeholder="https://dcamp.kr/…" style="flex:1" class="recruit-link-url">
+    <button type="button" onclick="this.closest('div').remove()" style="flex-shrink:0;width:28px;height:28px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-3)">×</button>`;
+  list.appendChild(row);
+}
+function addRecruitLinkFieldEF(listId){
+  const list=document.getElementById(listId);
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:6px;align-items:center';
+  row.innerHTML=`<input type="url" placeholder="https://dcamp.kr/…" style="flex:1;font-size:12px" class="recruit-link-url-ef">
+    <button type="button" onclick="this.closest('div').remove()" style="flex-shrink:0;width:24px;height:24px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-3)">×</button>`;
+  list.appendChild(row);
+}
+function getRecruitLinks(listId){
+  const list=document.getElementById(listId);
+  if(!list)return'';
+  return [...list.querySelectorAll('.recruit-link-url')].map(i=>i.value.trim()).filter(Boolean).join('\n');
+}
+async function commitLinksREF(pid,rid,key,label){
+  const eid=`${pid}-${rid}-${key}`;
+  const list=document.getElementById(`efi-${eid}-list`);
+  const val=list?[...list.querySelectorAll('.recruit-link-url-ef')].map(i=>i.value.trim()).filter(Boolean).join('\n'):'';
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  const r=p.reqs.find(x=>x.id===rid);
+  if(!r)return;
+  const old=r[key]||'';
+  if(val===old){cancelREF(pid,rid,key);return;}
+  const what=`${REQ_LABELS[r.type]||'요청'} · ${label} 수정`;
+  r[key]=val;
+  cancelREF(pid,rid,key);
+  openReasonModal('status',what,async(reason)=>{
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    if(reason)logEntry.memo=reason;
+    await updateProg(pid,{reqs:p.reqs},logEntry);
+    toast('수정됐어요.');
+  });
 }
 function addSignageField(listId){
   const list=document.getElementById(listId);
@@ -2284,6 +2344,22 @@ function renderDetail(p){
               <button class="btn btn-primary btn-sm" onclick="commitDateRange('${pid2}','${rid2}','${key2}','${label2}','false')"><i class="ti ti-check"></i></button>
               <button class="btn btn-ghost btn-sm" onclick="cancelREF('${pid2}','${rid2}','${key2}')"><i class="ti ti-x"></i></button>
             </div>`;
+          } else if(ftype==='links'){
+            const linkLines=(val||'').split('\n').filter(Boolean);
+            const rows=linkLines.length?linkLines:[''];
+            inputHtml=`<div style="flex:1">
+              <div id="efi-${eid}-list" style="display:flex;flex-direction:column;gap:6px">
+                ${rows.map(u=>`<div style="display:flex;gap:6px;align-items:center">
+                  <input type="url" placeholder="https://dcamp.kr/…" style="flex:1;font-size:12px" class="recruit-link-url-ef" value="${u.replace(/"/g,'&quot;')}">
+                  <button type="button" onclick="this.closest('div').remove()" style="flex-shrink:0;width:24px;height:24px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-3)">×</button>
+                </div>`).join('')}
+              </div>
+              <button type="button" onclick="addRecruitLinkFieldEF('efi-${eid}-list')" style="margin-top:6px;font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:flex;align-items:center;gap:4px"><i class="ti ti-plus" style="font-size:13px"></i>링크 추가</button>
+            </div>`;
+            actionsHtml=`<div class="ef-actions">
+              <button class="btn btn-primary btn-sm" onclick="commitLinksREF('${pid2}','${rid2}','${key2}','${label2}')"><i class="ti ti-check"></i></button>
+              <button class="btn btn-ghost btn-sm" onclick="cancelREF('${pid2}','${rid2}','${key2}')"><i class="ti ti-x"></i></button>
+            </div>`;
           } else if(multi){
             inputHtml=`<textarea id="efi-${eid}" rows="3">${val}</textarea>`;
           } else {
@@ -2725,7 +2801,7 @@ async function submitAddReq(){
     const r={id:uid(),type:t,status:'a'};
     if(t==='recruit'){
       r.recruit=getDateVal('mv-recruit',true,false);
-      r.goal=sv('mv-goal');r.link=sv('mv-link');r.camp_note=sv('mv-camp-note');
+      r.goal=sv('mv-goal');r.link=getRecruitLinks('mv-link-list');r.camp_note=sv('mv-camp-note');
     } else if(t==='content'){
       r.channels=pills(document.getElementById('modal-ch-pills'));
       r.cont_date=getDateVal('mv-cont',false,false);
@@ -2822,7 +2898,7 @@ async function submitProg(){
   if(selTypes.has('recruit')){
     reqs.push({id:uid(),type:'recruit',status:'a',
       recruit:getDateVal('fv-recruit',true,false),
-      goal:sv('fv-goal'),link:sv('fv-link'),camp_note:sv('fv-camp-note')});
+      goal:sv('fv-goal'),link:getRecruitLinks('fv-link-list'),camp_note:sv('fv-camp-note')});
   }
   if(selTypes.has('content'))reqs.push({id:uid(),type:'content',status:'a',
     channels:pills(document.getElementById('fv-channels')),
