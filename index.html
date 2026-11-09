@@ -701,10 +701,23 @@ select{cursor:pointer}
               <input type="checkbox" id="fv-video-same" onchange="toggleSameAsEvent('fv-video','fv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
               행사 일정과 동일
             </label>
-            <div id="fv-video-date-mode" style="display:flex;align-items:center;gap:6px">
-              <input id="fv-video-from" type="datetime-local" style="flex:1;font-size:12px">
-              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
-              <input id="fv-video-to" type="datetime-local" style="flex:1;font-size:12px">
+            <div id="fv-video-date-mode" style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <input id="fv-video-from" type="date" style="flex:1;font-size:12px">
+                <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+                <input id="fv-video-to" type="date" style="flex:1;font-size:12px">
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:400;user-select:none">
+                  <input type="checkbox" id="fv-video-time-toggle" onchange="toggleSubTime('fv-video',this)" style="accent-color:var(--accent);width:13px;height:13px">
+                  시간 지정
+                </label>
+                <div id="fv-video-time-wrap" style="display:none;align-items:center;gap:6px;flex:1">
+                  <input id="fv-video-time-from" type="time" style="font-size:12px;width:100px">
+                  <span style="font-size:12px;color:var(--text-3)">~</span>
+                  <input id="fv-video-time-to" type="time" style="font-size:12px;width:100px">
+                </div>
+              </div>
             </div>
             <div id="fv-video-text-mode" style="display:none">
               <input id="fv-video-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
@@ -811,10 +824,23 @@ select{cursor:pointer}
               <input type="checkbox" id="fv-photo-same" onchange="toggleSameAsEvent('fv-photo','fv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
               행사 일정과 동일
             </label>
-            <div id="fv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
-              <input id="fv-photo-from" type="datetime-local" style="flex:1;font-size:12px">
-              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
-              <input id="fv-photo-to" type="datetime-local" style="flex:1;font-size:12px">
+            <div id="fv-photo-date-mode" style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <input id="fv-photo-from" type="date" style="flex:1;font-size:12px">
+                <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+                <input id="fv-photo-to" type="date" style="flex:1;font-size:12px">
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:400;user-select:none">
+                  <input type="checkbox" id="fv-photo-time-toggle" onchange="toggleSubTime('fv-photo',this)" style="accent-color:var(--accent);width:13px;height:13px">
+                  시간 지정
+                </label>
+                <div id="fv-photo-time-wrap" style="display:none;align-items:center;gap:6px;flex:1">
+                  <input id="fv-photo-time-from" type="time" style="font-size:12px;width:100px">
+                  <span style="font-size:12px;color:var(--text-3)">~</span>
+                  <input id="fv-photo-time-to" type="time" style="font-size:12px;width:100px">
+                </div>
+              </div>
             </div>
             <div id="fv-photo-text-mode" style="display:none">
               <input id="fv-photo-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
@@ -996,10 +1022,23 @@ select{cursor:pointer}
             <input type="checkbox" id="mv-video-same" onchange="toggleSameAsEvent('mv-video','mv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
             행사 일정과 동일
           </label>
-          <div id="mv-video-date-mode" style="display:flex;align-items:center;gap:6px">
-            <input id="mv-video-from" type="datetime-local" style="flex:1;font-size:12px">
-            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
-            <input id="mv-video-to" type="datetime-local" style="flex:1;font-size:12px">
+          <div id="mv-video-date-mode" style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:6px">
+              <input id="mv-video-from" type="date" style="flex:1;font-size:12px">
+              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+              <input id="mv-video-to" type="date" style="flex:1;font-size:12px">
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:400;user-select:none">
+                <input type="checkbox" id="mv-video-time-toggle" onchange="toggleSubTime('mv-video',this)" style="accent-color:var(--accent);width:13px;height:13px">
+                시간 지정
+              </label>
+              <div id="mv-video-time-wrap" style="display:none;align-items:center;gap:6px;flex:1">
+                <input id="mv-video-time-from" type="time" style="font-size:12px;width:100px">
+                <span style="font-size:12px;color:var(--text-3)">~</span>
+                <input id="mv-video-time-to" type="time" style="font-size:12px;width:100px">
+              </div>
+            </div>
           </div>
           <div id="mv-video-text-mode" style="display:none">
             <input id="mv-video-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
@@ -1097,10 +1136,23 @@ select{cursor:pointer}
             <input type="checkbox" id="mv-photo-same" onchange="toggleSameAsEvent('mv-photo','mv')" style="accent-color:var(--accent);flex-shrink:0;width:14px;height:14px">
             행사 일정과 동일
           </label>
-          <div id="mv-photo-date-mode" style="display:flex;align-items:center;gap:6px">
-            <input id="mv-photo-from" type="datetime-local" style="flex:1;font-size:12px">
-            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
-            <input id="mv-photo-to" type="datetime-local" style="flex:1;font-size:12px">
+          <div id="mv-photo-date-mode" style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:6px">
+              <input id="mv-photo-from" type="date" style="flex:1;font-size:12px">
+              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+              <input id="mv-photo-to" type="date" style="flex:1;font-size:12px">
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:400;user-select:none">
+                <input type="checkbox" id="mv-photo-time-toggle" onchange="toggleSubTime('mv-photo',this)" style="accent-color:var(--accent);width:13px;height:13px">
+                시간 지정
+              </label>
+              <div id="mv-photo-time-wrap" style="display:none;align-items:center;gap:6px;flex:1">
+                <input id="mv-photo-time-from" type="time" style="font-size:12px;width:100px">
+                <span style="font-size:12px;color:var(--text-3)">~</span>
+                <input id="mv-photo-time-to" type="time" style="font-size:12px;width:100px">
+              </div>
+            </div>
           </div>
           <div id="mv-photo-text-mode" style="display:none">
             <input id="mv-photo-text" type="text" placeholder="예: 2026-11-20 14:00~18:00">
@@ -1222,6 +1274,7 @@ const STATUSES = [
   {v:'e',l:'보류/취소',c:'s-e'},
 ];
 const PROG_FIELDS = [
+  {key:'name',    label:'프로그램명'},
   {key:'team',    label:'담당팀'},
   {key:'person',  label:'담당자'},
   {key:'target',  label:'주요 타깃',   multi:false},
@@ -1313,21 +1366,42 @@ function setDateMode(prefix, mode){
   if(tbD){tbD.style.color=isDate?'var(--accent)':'var(--text-3)';tbD.style.fontWeight=isDate?'600':'400';}
   if(tbT){tbT.style.color=isDate?'var(--text-3)':'var(--accent)';tbT.style.fontWeight=isDate?'400':'600';}
   if(isDate){const el=document.getElementById(prefix+'-text');if(el)el.value='';}
-  else{const f=document.getElementById(prefix+'-from'),t=document.getElementById(prefix+'-to');if(f)f.value='';if(t)t.value='';}
+  else{
+    const f=document.getElementById(prefix+'-from'),t=document.getElementById(prefix+'-to');if(f)f.value='';if(t)t.value='';
+    // 시간 토글도 초기화
+    const cb=document.getElementById(prefix+'-time-toggle');
+    if(cb){cb.checked=false;const wrap=document.getElementById(prefix+'-time-wrap');if(wrap)wrap.style.display='none';}
+    const tf=document.getElementById(prefix+'-time-from'),tt=document.getElementById(prefix+'-time-to');
+    if(tf)tf.value='';if(tt)tt.value='';
+  }
+}
+function toggleSubTime(prefix, cb){
+  const wrap=document.getElementById(prefix+'-time-wrap');
+  if(wrap)wrap.style.display=cb.checked?'flex':'none';
+  if(!cb.checked){
+    const tf=document.getElementById(prefix+'-time-from'),tt=document.getElementById(prefix+'-time-to');
+    if(tf)tf.value='';if(tt)tt.value='';
+  }
 }
 function getDateVal(prefix, hasRange, hasTime){
   const dm=document.getElementById(prefix+'-date-mode');
   const isDateMode=!dm||dm.style.display!=='none';
   if(isDateMode){
-    const fmt=v=>{if(!v)return'';return hasTime?v.replace('T',' ').slice(0,16):v;};
-    const f=fmt(sv(prefix+'-from'));
+    // 시간 토글 여부 확인
+    const timeCb=document.getElementById(prefix+'-time-toggle');
+    const useTime=timeCb&&timeCb.checked;
+    const tf=useTime?sv(prefix+'-time-from'):'';
+    const tt=useTime?sv(prefix+'-time-to'):'';
+    const fDate=sv(prefix+'-from');
     const toEl=document.getElementById(prefix+'-to');
-    const t=toEl?fmt(toEl.value):'';
+    const tDate=toEl?toEl.value:'';
+    const fStr=fDate+(tf?' '+tf:'');
+    const tStr=tDate+(tt?' '+tt:'');
     if(hasRange||toEl){
-      if(f&&t)return f+' ~ '+t;
-      return f||t;
+      if(fStr&&tStr)return fStr+' ~ '+tStr;
+      return fStr||tStr;
     }
-    return f;
+    return fStr;
   }
   return sv(prefix+'-text');
 }
@@ -2045,11 +2119,13 @@ function renderDetail(p){
     const display=val?renderDocVal(val,f.key):`<span class="empty-val">–</span>`;
     const isDoc=f.key==='doc';
     const isEvent=f.key==='event';
-    // event 필드: 기존값 파싱
+    // event 필드: 기존값 파싱 (날짜/시간 분리)
     const parts=(val||'').split('~').map(s=>s.trim());
     const isDateVal=parts[0]&&parts[0].match(/^\d{4}-\d{2}-\d{2}/);
-    const fromV=isDateVal?(parts[0]||'').replace(' ','T'):'';
-    const toV=isDateVal?(parts[1]||'').replace(' ','T'):'';
+    const parseDateTime=s=>{const m=s.match(/^(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?$/);return m?{d:m[1],t:m[2]||''}:{d:'',t:''};};
+    const fromP=isDateVal?parseDateTime(parts[0]||''):{d:'',t:''};
+    const toP=isDateVal?parseDateTime(parts[1]||''):{d:'',t:''};
+    const hasTimeVal=!!(fromP.t||toP.t);
     const textV=isDateVal?'':(val||'');
 
     const eventInput=isEvent?`<div style="flex:1">
@@ -2059,10 +2135,23 @@ function renderDetail(p){
           <button type="button" id="ef-event-tab-text-${p.id}" onclick="setEFEventMode('${p.id}','text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:${!isDateVal&&val?'var(--accent)':'var(--text-3)'};font-weight:${!isDateVal&&val?'600':'400'};padding:0">직접 입력</button>
         </span>
       </div>
-      <div id="ef-event-date-${p.id}" style="display:${isDateVal||!val?'flex':'none'};align-items:center;gap:6px;margin-bottom:4px">
-        <input id="efi-${p.id}-event-from" type="datetime-local" value="${fromV}" style="flex:1;font-size:12px">
-        <span style="color:var(--text-3);flex-shrink:0">~</span>
-        <input id="efi-${p.id}-event-to" type="datetime-local" value="${toV}" style="flex:1;font-size:12px">
+      <div id="ef-event-date-${p.id}" style="display:${isDateVal||!val?'flex':'none'};flex-direction:column;gap:6px;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <input id="efi-${p.id}-event-from" type="date" value="${fromP.d}" style="flex:1;font-size:12px">
+          <span style="color:var(--text-3);flex-shrink:0">~</span>
+          <input id="efi-${p.id}-event-to" type="date" value="${toP.d}" style="flex:1;font-size:12px">
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:400;user-select:none">
+            <input type="checkbox" id="efi-${p.id}-event-time-toggle" ${hasTimeVal?'checked':''} onchange="toggleEFTime('${p.id}',this)" style="accent-color:var(--accent);width:13px;height:13px">
+            시간 지정
+          </label>
+          <div id="efi-${p.id}-event-time-wrap" style="display:${hasTimeVal?'flex':'none'};align-items:center;gap:6px;flex:1">
+            <input id="efi-${p.id}-event-time-from" type="time" value="${fromP.t}" style="font-size:12px;width:100px">
+            <span style="font-size:12px;color:var(--text-3)">~</span>
+            <input id="efi-${p.id}-event-time-to" type="time" value="${toP.t}" style="font-size:12px;width:100px">
+          </div>
+        </div>
       </div>
       <div id="ef-event-text-${p.id}" style="display:${!isDateVal&&val?'block':'none'}">
         <input id="efi-${p.id}-event-text" type="text" value="${textV}" placeholder="예: 10월 중 / 11월 초 예정">
@@ -2156,23 +2245,31 @@ function renderDetail(p){
             </div>`;
             actionsHtml='';
           } else if(ftype==='daterange'||ftype==='datetimerange'){
-            const isdt=ftype==='datetimerange';
-            const itype=isdt?'datetime-local':'date';
-            // 기존값 파싱 (YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM)
-            const parts=(val||'').split('~').map(s=>s.trim());
-            const fromVal=parts[0]?parts[0].replace(' ','T'):'';
-            const toVal=parts[1]?parts[1].replace(' ','T'):'';
-            inputHtml=`<div style="flex:1">
-              <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">
-                <input id="efi-${eid}-from" type="${itype}" value="${fromVal}" style="flex:1;font-size:12px">
+            // 기존값 파싱 — 날짜/시간 분리
+            const pdt=v=>{const m=v.match(/^(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?$/);return m?{d:m[1],t:m[2]||''}:{d:'',t:''};};
+            const rparts=(val||'').split('~').map(s=>s.trim());
+            const rfrom=pdt(rparts[0]||''), rto=pdt(rparts[1]||'');
+            const rHasTime=!!(rfrom.t||rto.t);
+            inputHtml=`<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:4px">
+                <input id="efi-${eid}-from" type="date" value="${rfrom.d}" style="flex:1;font-size:12px">
                 <span style="color:var(--text-3)">~</span>
-                <input id="efi-${eid}-to" type="${itype}" value="${toVal}" style="flex:1;font-size:12px">
+                <input id="efi-${eid}-to" type="date" value="${rto.d}" style="flex:1;font-size:12px">
               </div>
-              <input id="efi-${eid}-text" type="text" placeholder="직접 입력" value="${val.includes('~')||val.match(/\\d{4}-\\d{2}-\\d{2}/)?'':val}" style="font-size:12px;color:var(--text-3)">
-              <div style="font-size:11px;color:var(--text-3);margin-top:2px">날짜 피커 또는 아래 직접 입력</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:400;user-select:none">
+                  <input type="checkbox" id="efi-${eid}-time-toggle" ${rHasTime?'checked':''} onchange="toggleREFTime('${eid}',this)" style="accent-color:var(--accent);width:13px;height:13px">
+                  시간 지정
+                </label>
+                <div id="efi-${eid}-time-wrap" style="display:${rHasTime?'flex':'none'};align-items:center;gap:4px;flex:1">
+                  <input id="efi-${eid}-time-from" type="time" value="${rfrom.t}" style="font-size:12px;width:95px">
+                  <span style="font-size:12px;color:var(--text-3)">~</span>
+                  <input id="efi-${eid}-time-to" type="time" value="${rto.t}" style="font-size:12px;width:95px">
+                </div>
+              </div>
             </div>`;
             actionsHtml=`<div class="ef-actions">
-              <button class="btn btn-primary btn-sm" onclick="commitDateRange('${pid2}','${rid2}','${key2}','${label2}','${isdt}')"><i class="ti ti-check"></i></button>
+              <button class="btn btn-primary btn-sm" onclick="commitDateRange('${pid2}','${rid2}','${key2}','${label2}',false)"><i class="ti ti-check"></i></button>
               <button class="btn btn-ghost btn-sm" onclick="cancelREF('${pid2}','${rid2}','${key2}')"><i class="ti ti-x"></i></button>
             </div>`;
           } else if(ftype==='date'){
@@ -2273,6 +2370,15 @@ async function saveMemo(pid,cid){
   toast('사유가 저장됐어요.');
 }
 
+function toggleEFTime(pid, cb){
+  const wrap=document.getElementById(`efi-${pid}-event-time-wrap`);
+  if(wrap)wrap.style.display=cb.checked?'flex':'none';
+  if(!cb.checked){
+    const tf=document.getElementById(`efi-${pid}-event-time-from`);
+    const tt=document.getElementById(`efi-${pid}-event-time-to`);
+    if(tf)tf.value=''; if(tt)tt.value='';
+  }
+}
 function setEFEventMode(pid, mode){
   const isDate=mode==='date';
   const dateEl=document.getElementById(`ef-event-date-${pid}`);
@@ -2283,15 +2389,25 @@ function setEFEventMode(pid, mode){
   if(textEl)textEl.style.display=isDate?'none':'block';
   if(tabDate){tabDate.style.color=isDate?'var(--accent)':'var(--text-3)';tabDate.style.fontWeight=isDate?'600':'400';}
   if(tabText){tabText.style.color=isDate?'var(--text-3)':'var(--accent)';tabText.style.fontWeight=isDate?'400':'600';}
+  if(!isDate){
+    const cb=document.getElementById(`efi-${pid}-event-time-toggle`);
+    if(cb){cb.checked=false; const wrap=document.getElementById(`efi-${pid}-event-time-wrap`);if(wrap)wrap.style.display='none';}
+    ['event-from','event-to','event-time-from','event-time-to'].forEach(k=>{const el=document.getElementById(`efi-${pid}-${k}`);if(el)el.value='';});
+  }
 }
 async function commitEventEF(pid){
   const dateEl=document.getElementById(`ef-event-date-${pid}`);
   const isDate=dateEl&&dateEl.style.display!=='none';
   let val='';
   if(isDate){
-    const fmt=v=>v?v.replace('T',' ').slice(0,16):'';
-    const f=fmt(document.getElementById(`efi-${pid}-event-from`)?.value||'');
-    const t=fmt(document.getElementById(`efi-${pid}-event-to`)?.value||'');
+    const fDate=document.getElementById(`efi-${pid}-event-from`)?.value||'';
+    const tDate=document.getElementById(`efi-${pid}-event-to`)?.value||'';
+    const timeCb=document.getElementById(`efi-${pid}-event-time-toggle`);
+    const useTime=timeCb&&timeCb.checked;
+    const tf=useTime?(document.getElementById(`efi-${pid}-event-time-from`)?.value||''):'';
+    const tt=useTime?(document.getElementById(`efi-${pid}-event-time-to`)?.value||''):'';
+    const f=fDate+(tf?' '+tf:'');
+    const t=tDate+(tt?' '+tt:'');
     val=f&&t?`${f} ~ ${t}`:f||t;
   } else {
     val=document.getElementById(`efi-${pid}-event-text`)?.value.trim()||'';
@@ -2461,18 +2577,29 @@ function startREF(pid,rid,key,multi){
 function cancelREF(pid,rid,key){
   document.getElementById(`ef-${pid}-${rid}-${key}`).classList.remove('ef-editing');
 }
+function toggleREFTime(eid, cb){
+  const wrap=document.getElementById(`efi-${eid}-time-wrap`);
+  if(wrap)wrap.style.display=cb.checked?'flex':'none';
+  if(!cb.checked){
+    const tf=document.getElementById(`efi-${eid}-time-from`);
+    const tt=document.getElementById(`efi-${eid}-time-to`);
+    if(tf)tf.value=''; if(tt)tt.value='';
+  }
+}
 async function commitDateRange(pid,rid,key,label,isdt){
   const eid=`${pid}-${rid}-${key}`;
   const fromEl=document.getElementById(`efi-${eid}-from`);
   const toEl=document.getElementById(`efi-${eid}-to`);
-  const textEl=document.getElementById(`efi-${eid}-text`);
+  const timeCb=document.getElementById(`efi-${eid}-time-toggle`);
+  const useTime=timeCb&&timeCb.checked;
+  const tf=useTime?(document.getElementById(`efi-${eid}-time-from`)?.value||''):'';
+  const tt=useTime?(document.getElementById(`efi-${eid}-time-to`)?.value||''):'';
   let val='';
-  const fmt=v=>v?(isdt==='true'?v.replace('T',' ').slice(0,16):v):'';
-  const fromV=fmt(fromEl?.value);
-  const toV=toEl?fmt(toEl?.value):'';
-  const textV=textEl?.value.trim()||'';
-  if(textV) val=textV;
-  else if(fromV&&toV) val=`${fromV} ~ ${toV}`;
+  const fDate=fromEl?.value||'';
+  const tDate=toEl?.value||'';
+  const fromV=fDate+(tf?' '+tf:'');
+  const toV=tDate+(tt?' '+tt:'');
+  if(fromV&&toV) val=`${fromV} ~ ${toV}`;
   else val=fromV||toV;
 
   const p=progs.find(x=>x.id===pid);
