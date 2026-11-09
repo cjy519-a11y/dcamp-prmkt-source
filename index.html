@@ -537,10 +537,23 @@ select{cursor:pointer}
               <button type="button" id="event-tab-text" onclick="setEventMode('text')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text-3);padding:0">직접 입력</button>
             </span>
           </div>
-          <div id="event-date-mode" style="display:flex;align-items:center;gap:6px">
-            <input id="fv-event-from" type="datetime-local" style="flex:1;font-size:12px">
-            <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
-            <input id="fv-event-to" type="datetime-local" style="flex:1;font-size:12px">
+          <div id="event-date-mode" style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:6px">
+              <input id="fv-event-from" type="date" style="flex:1;font-size:12px">
+              <span style="font-size:13px;color:var(--text-3);flex-shrink:0">~</span>
+              <input id="fv-event-to" type="date" style="flex:1;font-size:12px">
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3);cursor:pointer;font-weight:400;user-select:none">
+                <input type="checkbox" id="fv-event-time-toggle" onchange="toggleEventTime(this)" style="accent-color:var(--accent);width:13px;height:13px">
+                시간 지정
+              </label>
+              <div id="fv-event-time-wrap" style="display:none;align-items:center;gap:6px;flex:1">
+                <input id="fv-event-time-from" type="time" style="font-size:12px;width:100px">
+                <span style="font-size:12px;color:var(--text-3)">~</span>
+                <input id="fv-event-time-to" type="time" style="font-size:12px;width:100px">
+              </div>
+            </div>
           </div>
           <div id="event-text-mode" style="display:none">
             <input id="fv-event-text" type="text" placeholder="예: 10월 중 / 11월 초 예정 / 미정">
@@ -1269,7 +1282,11 @@ function toggleSameAsEvent(prefix, formPrefix){
     const isDateMode = !dm || dm.style.display !== 'none';
     if(isDateMode){
       const f = sv('fv-event-from'), t = sv('fv-event-to');
-      if(f&&t) eventVal = f+' ~ '+t; else eventVal = f||t;
+      const tf=sv('fv-event-time-from'), tt=sv('fv-event-time-to');
+      const hasTime=document.getElementById('fv-event-time-toggle')?.checked;
+      const fStr=f+(hasTime&&tf?' '+tf:'');
+      const tStr=t+(hasTime&&tt?' '+tt:'');
+      if(fStr&&tStr) eventVal = fStr+' ~ '+tStr; else eventVal = fStr||tStr;
     } else { eventVal = sv('fv-event-text'); }
   } else if(formPrefix === 'mv'){
     // 요청 추가 모달: 현재 열려있는 프로그램의 event 값
@@ -1332,6 +1349,14 @@ function makeDateField(prefix, hasRange, hasTime, labels){
     </div>`;
 }
 
+function toggleEventTime(cb){
+  const wrap=document.getElementById('fv-event-time-wrap');
+  wrap.style.display=cb.checked?'flex':'none';
+  if(!cb.checked){
+    document.getElementById('fv-event-time-from').value='';
+    document.getElementById('fv-event-time-to').value='';
+  }
+}
 function setEventMode(mode){
   const isDate=mode==='date';
   document.getElementById('event-date-mode').style.display=isDate?'flex':'none';
@@ -1343,15 +1368,27 @@ function setEventMode(mode){
   tabText.style.color=isDate?'var(--text-3)':'var(--accent)';
   tabText.style.fontWeight=isDate?'400':'600';
   if(isDate)document.getElementById('fv-event-text').value='';
-  else{document.getElementById('fv-event-from').value='';document.getElementById('fv-event-to').value='';}
+  else{
+    document.getElementById('fv-event-from').value='';
+    document.getElementById('fv-event-to').value='';
+    document.getElementById('fv-event-time-from').value='';
+    document.getElementById('fv-event-time-to').value='';
+    const cb=document.getElementById('fv-event-time-toggle');
+    if(cb)cb.checked=false;
+    const wrap=document.getElementById('fv-event-time-wrap');
+    if(wrap)wrap.style.display='none';
+  }
 }
 function getEventVal(){
   const dm=document.getElementById('event-date-mode');
   if(dm&&dm.style.display!=='none'){
-    const fmt=v=>v?v.replace('T',' ').slice(0,16):'';
-    const f=fmt(sv('fv-event-from')),t=fmt(sv('fv-event-to'));
-    if(f&&t)return f+' ~ '+t;
-    return f||t;
+    const f=sv('fv-event-from'), t=sv('fv-event-to');
+    const tf=sv('fv-event-time-from'), tt=sv('fv-event-time-to');
+    const hasTime=document.getElementById('fv-event-time-toggle')?.checked;
+    const fStr=f+(hasTime&&tf?' '+tf:'');
+    const tStr=t+(hasTime&&tt?' '+tt:'');
+    if(fStr&&tStr)return fStr+' ~ '+tStr;
+    return fStr||tStr;
   }
   return sv('fv-event-text');
 }
@@ -2266,7 +2303,7 @@ async function commitEventEF(pid){
   const what=`행사 일정 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
   cancelEF(pid,'event');
   openReasonModal('field','행사 일정을 수정했어요.',async(reason)=>{
-    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{event:val},logEntry);
     toast('수정됐어요.');
@@ -2292,7 +2329,7 @@ async function commitDocEF(pid){
   const what=`관련 자료 수정`;
   cancelEF(pid,'doc');
   openReasonModal('field','관련 자료를 수정했어요.',async(reason)=>{
-    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{doc:val},logEntry);toast('수정됐어요.');
   });
@@ -2360,7 +2397,7 @@ function confirmDeleteReq(pid,rid,label){
   _deleteAction=async()=>{
     const p=progs.find(x=>x.id===pid);if(!p)return;
     const reqs=p.reqs.filter(r=>r.id!==rid);
-    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what:`${label} 요청 삭제`,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what:`${label} 요청 삭제`,ts:Date.now()};
     await updateProg(pid,{reqs},logEntry);
     closeModal('modal-delete');
     toast('삭제됐어요.');
@@ -2405,7 +2442,7 @@ async function commitEF(pid,key,label,multi){
     :`${label} 수정: "(없음)" → "${val.slice(0,35)}${val.length>35?'…':''}"`;
   cancelEF(pid,key);
   openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
-    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
     if(reason) logEntry.memo=reason;
     await updateProg(pid,{[key]:val},logEntry);
     toast('수정됐어요.');
@@ -2445,7 +2482,7 @@ async function commitDateRange(pid,rid,key,label,isdt){
   const old=r[key]||'';
   r[key]=val;
   const what=`${REQ_LABELS[r.type]||'요청'} · ${label} 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
-  const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
+  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
   openReasonModal('status',what,async(reason)=>{
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs:p.reqs},logEntry);
@@ -2464,7 +2501,7 @@ async function commitChannels(pid,rid){
   const old=r.channels||'';
   r.channels=val;
   const what=`콘텐츠 · 희망 채널 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
-  const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
+  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
   openReasonModal('status',what,async(reason)=>{
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs:p.reqs},logEntry);
@@ -2487,7 +2524,7 @@ async function commitREF(pid,rid,key,label,multi){
   cancelREF(pid,rid,key);
   openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
     const reqs=p.reqs.map(x=>x.id===rid?{...x,[key]:val}:x);
-    const logEntry={id:uid(),who:p.person||getCurrentUser()||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs},logEntry);
     toast('수정됐어요.');
@@ -2582,7 +2619,7 @@ async function submitAddReq(){
       r.pr_body=sv('mv-pr-body');r.pr_note=sv('mv-pr-note');
     }
     newReqs.push(r);
-    logs.push({id:uid(),who:p.person||getCurrentUser()||p.team,what:`${REQ_LABELS[t]} 요청 추가`,ts:Date.now()});
+    logs.push({id:uid(),who:getCurrentUser()||p.person||p.team,what:`${REQ_LABELS[t]} 요청 추가`,ts:Date.now()});
   });
   const cl=[...(p.changelog||[]),...logs];
   await updateProg(curProgId,{reqs:newReqs},logs[0]);
