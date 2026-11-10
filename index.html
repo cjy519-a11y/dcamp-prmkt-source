@@ -1256,7 +1256,7 @@ let curProgId = null;
 let curFilter = 'active';
 let curTypeFilter = 'all';
 let curTeam = '';
-let curSort = 'createdAt';
+let curSort = 'updatedAt';
 let curSortDir = 'desc'; // 'asc' | 'desc'
 
 // 본부/실 → 하위 팀 계층 맵
@@ -1331,15 +1331,15 @@ function renderDocVal(val,key){
     // [설명] url 형식 파싱
     const m=t.match(/^\[(.+?)\]\s*(https?:\/\/.+)$/);
     if(m){
-      return`<a href="${m[2]}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px;margin-bottom:2px" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-        <i class="ti ti-link" style="font-size:11px;flex-shrink:0"></i>
-        <span style="font-weight:600">${m[1]}</span>
-        <span style="color:var(--text-3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m[2]}</span>
-      </a>`;
+      return`<div style="display:flex;align-items:center;gap:5px;font-size:12px;margin-bottom:2px">
+        <i class="ti ti-link" style="font-size:11px;flex-shrink:0;color:var(--text-3)"></i>
+        <span style="font-weight:600;color:var(--text)">${m[1]}</span>
+        <a href="${m[2]}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--accent);text-decoration:none;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${m[2]}</a>
+      </div>`;
     }
     const isUrl=/^https?:\/\//.test(t);
     return isUrl
-      ?`<a href="${t}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;display:block;font-size:12px;word-break:break-all;margin-bottom:2px">${t}</a>`
+      ?`<a href="${t}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--accent);text-decoration:none;display:block;font-size:12px;word-break:break-all;margin-bottom:2px" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${t}</a>`
       :`<span style="font-size:12px">${t}</span>`;
   }).join('');
 }
