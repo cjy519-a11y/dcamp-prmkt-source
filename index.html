@@ -403,7 +403,7 @@ select{cursor:pointer}
             기본 정보
             <div style="display:flex;align-items:center;gap:12px">
               <span id="detail-created" style="font-size:11px;color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0"></span>
-              <span style="font-size:11px;color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">항목 더블클릭 시 수정</span>
+              <span style="font-size:11px;color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0">항목 클릭 시 수정</span>
             </div>
           </div>
           <div id="prog-fields"></div>
@@ -2240,7 +2240,7 @@ function renderDetail(p){
 
     return`<div class="ef-row" id="ef-${p.id}-${f.key}">
       <div class="ef-label">${f.label}</div>
-      <div class="ef-val${val?'':' empty-val'}" ondblclick="startEF('${p.id}','${f.key}',${!!f.multi})" title="더블클릭하여 수정">${display}</div>
+      <div class="ef-val${val?'':' empty-val'}" onclick="startEF('${p.id}','${f.key}',${!!f.multi})" title="클릭하여 수정">${display}</div>
       <div class="ef-input-wrap">
         ${isDoc?docInput:isEvent?eventInput:f.multi?`<textarea id="efi-${p.id}-${f.key}" rows="3">${val}</textarea>`:`<input id="efi-${p.id}-${f.key}" type="text" value="${val.replace(/"/g,'&quot;')}">`}
         ${isDoc||isEvent?'':`<div class="ef-actions">
@@ -2273,7 +2273,7 @@ function renderDetail(p){
         </select>
       </div>
       <div class="req-body">
-        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">항목 더블클릭 시 수정</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">항목 클릭 시 수정</div>
         ${allFields.map(f=>{
           const val=r[f.key]||'';
           const ftype=f.type||'text';
@@ -2368,7 +2368,7 @@ function renderDetail(p){
 
           return`<div class="ef-row" id="ef-${eid}">
             <div class="ef-label">${f.label}</div>
-            <div class="ef-val${val?'':' empty-val'}" ondblclick="startREF('${pid2}','${rid2}','${key2}',${multi})" title="더블클릭하여 수정">${display}</div>
+            <div class="ef-val${val?'':' empty-val'}" onclick="startREF('${pid2}','${rid2}','${key2}',${multi})" title="클릭하여 수정">${display}</div>
             <div class="ef-input-wrap">
               ${inputHtml}${actionsHtml}
             </div>
