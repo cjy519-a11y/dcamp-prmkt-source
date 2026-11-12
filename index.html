@@ -2206,8 +2206,8 @@ function renderDetail(p){
     const parts=(val||'').split('~').map(s=>s.trim());
     const isDateVal=parts[0]&&parts[0].match(/^\d{4}-\d{2}-\d{2}/);
     const parseDateTime=s=>{const m=s.match(/^(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?$/);return m?{d:m[1],t:m[2]||''}:{d:'',t:''};};
-    const fromP=isDateVal?parseDateTime(parts[0]||''):{d:'',t:''};
-    const toP=isDateVal?parseDateTime(parts[1]||''):{d:'',t:''};
+    const fromP=isDateVal?parseDateTime(fmtDate(parts[0]||'')||''):{d:'',t:''};
+    const toP=isDateVal?parseDateTime(fmtDate(parts[1]||'')||''):{d:'',t:''};
     const hasTimeVal=!!(fromP.t||toP.t);
     const textV=isDateVal?'':(val||'');
 
@@ -2301,7 +2301,8 @@ function renderDetail(p){
           const val=r[f.key]||'';
           const ftype=f.type||'text';
           const multi=!!f.multi;
-          const displayVal=String(fmtDate(val)||'');
+          const _rawVal=Array.isArray(val)?JSON.stringify(val):(val===null||val===undefined?'':val);
+          const displayVal=String(fmtDate(_rawVal)||'');
           const display=displayVal?displayVal.replace(/</g,'&lt;').replace(/\n/g,'<br>'):`<span style="color:var(--text-3);font-style:italic">–</span>`;
           const CH_LIST=['홈페이지','링크드인','인스타그램','페이스북','유튜브 (현장스케치 외)','뉴스레터'];
           const eid=`${p.id}-${r.id}-${f.key}`;
@@ -2330,7 +2331,7 @@ function renderDetail(p){
           } else if(ftype==='daterange'||ftype==='datetimerange'){
             // 기존값 파싱 — 날짜/시간 분리
             const pdt=v=>{const m=v.match(/^(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?$/);return m?{d:m[1],t:m[2]||''}:{d:'',t:''};};
-            const rparts=(val||'').split('~').map(s=>s.trim());
+            const rparts=(val||'').split('~').map(s=>fmtDate(s.trim())||s.trim());
             const rfrom=pdt(rparts[0]||''), rto=pdt(rparts[1]||'');
             const rHasTime=!!(rfrom.t||rto.t);
             inputHtml=`<div style="flex:1;display:flex;flex-direction:column;gap:6px">
@@ -2357,7 +2358,7 @@ function renderDetail(p){
             </div>`;
           } else if(ftype==='date'){
             const parts=(val||'').split('~').map(s=>s.trim());
-            const fromVal=parts[0]||'';
+            const fromVal=fmtDate(parts[0]||'')||'';
             inputHtml=`<div style="flex:1">
               <input id="efi-${eid}-from" type="date" value="${fromVal}" style="flex:1;font-size:12px;margin-bottom:4px;display:block">
               <input id="efi-${eid}-text" type="text" placeholder="직접 입력" value="${fromVal.match(/\\d{4}-\\d{2}-\\d{2}/)?'':val}" style="font-size:12px;color:var(--text-3)">
