@@ -1702,6 +1702,7 @@ async function saveNew(data){
   const prog={id,...data};
   progs.unshift(prog);
   renderAll();
+  console.log('save_prog reqs:', JSON.stringify(prog.reqs));
   try{await apiPost({action:'save_prog',prog});}catch(e){}
   return id;
 }
