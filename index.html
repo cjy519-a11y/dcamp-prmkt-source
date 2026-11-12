@@ -2278,7 +2278,7 @@ function renderDetail(p){
           const val=r[f.key]||'';
           const ftype=f.type||'text';
           const multi=!!f.multi;
-          const displayVal=fmtDate(val);
+          const displayVal=String(fmtDate(val)||'');
           const display=displayVal?displayVal.replace(/</g,'&lt;').replace(/\n/g,'<br>'):`<span style="color:var(--text-3);font-style:italic">–</span>`;
           const CH_LIST=['홈페이지','링크드인','인스타그램','페이스북','유튜브 (현장스케치 외)','뉴스레터'];
           const eid=`${p.id}-${r.id}-${f.key}`;
