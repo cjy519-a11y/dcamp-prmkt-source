@@ -1689,12 +1689,21 @@ function showOfflineBanner(){
 async function initDB(){
   try{
     const data = await apiGet({action:'list'});
-    if(data.error){showOfflineBanner();loadDemo();return;}
+    if(data.error){showOfflineBanner();loadCached();return;}
     progs = data.progs||[];
     progs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-    // curTeam은 initUsername→applyUserInfo에서 이미 설정됨
+    // 최신 데이터 localStorage에 저장
+    try{localStorage.setItem('dcamp_progs_cache',JSON.stringify(progs));}catch{}
     renderAll();
-  }catch(e){showOfflineBanner();loadDemo();}
+  }catch(e){showOfflineBanner();loadCached();}
+}
+
+function loadCached(){
+  try{
+    const cached=localStorage.getItem('dcamp_progs_cache');
+    if(cached){progs=JSON.parse(cached);renderAll();return;}
+  }catch{}
+  loadDemo();
 }
 
 async function saveNew(data){
