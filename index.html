@@ -896,7 +896,13 @@ select{cursor:pointer}
       </div>
       <div class="card" style="overflow:visible">
         <div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border)">
-          ${['일','월','화','수','목','금','토'].map(d=>`<div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">${d}</div>`).join('')}
+          <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">일</div>
+          <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">월</div>
+          <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">화</div>
+          <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">수</div>
+          <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">목</div>
+          <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">금</div>
+          <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">토</div>
         </div>
         <div id="cal-month-grid" style="display:grid;grid-template-columns:repeat(7,1fr)"></div>
       </div>
@@ -1369,7 +1375,23 @@ function fmtDate(val){
   }catch{}
   return val;
 }
+const CH_COLORS = {
+  '홈페이지':     {bg:'#FFF3E0',color:'#E65100'},
+  '링크드인':     {bg:'#E8F0FE',color:'#0A66C2'},
+  '인스타그램':   {bg:'#FDF2F8',color:'#EC4899'},
+  '페이스북':     {bg:'#E7F0FD',color:'#1877F2'},
+  '유튜브':       {bg:'#FEE2E2',color:'#C00'},
+  '유튜브 (현장스케치 외)':{bg:'#FEE2E2',color:'#C00'},
+  '뉴스레터':     {bg:'#FEFCE8',color:'#CA8A04'},
+};
+
 function renderDocVal(val,key){
+  if(key==='channels'){
+    return (val||'').split(',').map(s=>s.trim()).filter(Boolean).map(ch=>{
+      const c=CH_COLORS[ch]||{bg:'var(--surface-sub)',color:'var(--text-2)'};
+      return`<span style="display:inline-flex;align-items:center;font-size:11px;font-weight:600;border-radius:4px;padding:2px 7px;margin:1px 2px 1px 0;background:${c.bg};color:${c.color}">${ch}</span>`;
+    }).join('');
+  }
   if(key==='link'){
     return val.split('\n').map(line=>{
       const t=line.trim();
