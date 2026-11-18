@@ -304,6 +304,8 @@ select{cursor:pointer}
 
   <!-- 변경 히스토리 -->
   <div class="nav-item" onclick="showPage('history')" id="nav-history" style="margin-top:4px"><i class="ti ti-history"></i>변경 히스토리</div>
+  <!-- 콘텐츠 캘린더 -->
+  <div class="nav-item" onclick="showPage('calendar');loadCalendar()" id="nav-calendar"><i class="ti ti-calendar"></i>콘텐츠 캘린더</div>
 
   <!-- 현재 사용자 -->
   <div style="margin-top:auto;padding:12px 1rem;border-top:1px solid var(--border)">
@@ -872,6 +874,34 @@ select{cursor:pointer}
     </div>
   </div>
 
+  <!-- 콘텐츠 캘린더 -->
+  <div class="page" id="page-calendar">
+    <div class="topbar">
+      <h2>콘텐츠 캘린더</h2>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-secondary btn-sm" id="cal-tab-list" onclick="switchCalView('list')" style="font-weight:600;border-color:var(--accent);color:var(--accent)"><i class="ti ti-list"></i>리스트</button>
+        <button class="btn btn-secondary btn-sm" id="cal-tab-month" onclick="switchCalView('month')"><i class="ti ti-calendar-month"></i>월별</button>
+      </div>
+    </div>
+    <!-- 리스트 뷰 -->
+    <div id="cal-view-list">
+      <div id="cal-list-body" class="card"><div class="empty"><i class="ti ti-loader"></i>불러오는 중…</div></div>
+    </div>
+    <!-- 월별 뷰 -->
+    <div id="cal-view-month" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+        <button class="btn btn-ghost btn-sm" onclick="calMonthMove(-1)"><i class="ti ti-chevron-left"></i></button>
+        <span id="cal-month-label" style="font-size:15px;font-weight:700;min-width:100px;text-align:center"></span>
+        <button class="btn btn-ghost btn-sm" onclick="calMonthMove(1)"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <div class="card" style="overflow:visible">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border)">
+          ${['일','월','화','수','목','금','토'].map(d=>`<div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">${d}</div>`).join('')}
+        </div>
+        <div id="cal-month-grid" style="display:grid;grid-template-columns:repeat(7,1fr)"></div>
+      </div>
+    </div>
+  </div>
 
 </main>
 </div><!-- /layout -->
@@ -3108,6 +3138,121 @@ document.getElementById('sidebar').addEventListener('click', function(e){
 });
 
 initUsername();
+
+// ── 캘린더 ───────────────────────────────────────────
+let calEvents = [];
+let calView = 'list';
+let calMonth = new Date();
+calMonth.setDate(1);
+
+async function loadCalendar(){
+  const body = document.getElementById('cal-list-body');
+  if(body) body.innerHTML = '<div class="empty"><i class="ti ti-loader"></i>불러오는 중…</div>';
+  try {
+    const data = await apiGet({action:'calendar', months:'3'});
+    calEvents = (data.events||[]).sort((a,b)=>new Date(a.start)-new Date(b.start));
+    renderCalView();
+  } catch(e) {
+    if(body) body.innerHTML = '<div class="empty"><i class="ti ti-wifi-off"></i>캘린더를 불러올 수 없어요</div>';
+  }
+}
+
+function switchCalView(v){
+  calView = v;
+  document.getElementById('cal-view-list').style.display = v==='list'?'block':'none';
+  document.getElementById('cal-view-month').style.display = v==='month'?'block':'none';
+  ['list','month'].forEach(t=>{
+    const btn = document.getElementById('cal-tab-'+t);
+    if(!btn) return;
+    const on = t===v;
+    btn.style.fontWeight = on?'600':'400';
+    btn.style.borderColor = on?'var(--accent)':'var(--border)';
+    btn.style.color = on?'var(--accent)':'var(--text-2)';
+  });
+  renderCalView();
+}
+
+function renderCalView(){
+  if(calView==='list') renderCalList();
+  else renderCalMonth();
+}
+
+function renderCalList(){
+  const body = document.getElementById('cal-list-body');
+  if(!body) return;
+  if(!calEvents.length){ body.innerHTML='<div class="empty"><i class="ti ti-calendar-off"></i>일정이 없어요</div>'; return; }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const groups = {};
+  calEvents.forEach(e => {
+    const d = new Date(e.start); d.setHours(0,0,0,0);
+    const key = d.toISOString().slice(0,10);
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+
+  const days = ['일','월','화','수','목','금','토'];
+  const fmt = d => { const date=new Date(d); return `${date.getMonth()+1}월 ${date.getDate()}일 (${days[date.getDay()]})`; };
+  const fmtTime = d => { const date=new Date(d); return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`; };
+
+  body.innerHTML = Object.keys(groups).sort().map(key => {
+    const date = new Date(key); date.setHours(0,0,0,0);
+    const isToday = date.getTime()===today.getTime();
+    const isPast = date < today;
+    return `<div style="border-bottom:1px solid var(--border)">
+      <div style="padding:8px 16px;background:var(--bg);font-size:12px;font-weight:700;color:${isToday?'var(--accent)':isPast?'var(--text-3)':'var(--text-2)'}">
+        ${fmt(key)}${isToday?' · 오늘':''}
+      </div>
+      ${groups[key].map(e => {
+        const isFromSource = e.desc && e.desc.includes('[원소스');
+        const timeStr = e.allDay ? '' : ` ${fmtTime(e.start)}`;
+        return `<div style="padding:9px 16px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);opacity:${isPast?'0.6':'1'}">
+          <span style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;flex-shrink:0;background:${isFromSource?'var(--accent-bg)':'#ECFDF5'};color:${isFromSource?'var(--accent-text)':'#065F46'}">
+            ${isFromSource?'원소스':'캘린더'}
+          </span>
+          <span style="font-size:13px;flex:1">${esc(e.title)}</span>
+          <span style="font-size:11px;color:var(--text-3)">${timeStr}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function renderCalMonth(){
+  const grid = document.getElementById('cal-month-grid');
+  const label = document.getElementById('cal-month-label');
+  if(!grid||!label) return;
+  label.textContent = `${calMonth.getFullYear()}년 ${calMonth.getMonth()+1}월`;
+  const year=calMonth.getFullYear(), month=calMonth.getMonth();
+  const firstDay=new Date(year,month,1).getDay();
+  const lastDate=new Date(year,month+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  const evMap={};
+  calEvents.forEach(e=>{
+    const d=new Date(e.start);
+    if(d.getFullYear()===year&&d.getMonth()===month){
+      const k=d.getDate(); if(!evMap[k])evMap[k]=[]; evMap[k].push(e);
+    }
+  });
+  let html='';
+  for(let i=0;i<firstDay;i++) html+=`<div style="min-height:80px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)"></div>`;
+  for(let d=1;d<=lastDate;d++){
+    const date=new Date(year,month,d); date.setHours(0,0,0,0);
+    const isToday=date.getTime()===today.getTime();
+    const evs=evMap[d]||[];
+    html+=`<div style="min-height:80px;padding:4px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:${isToday?'var(--accent-bg)':''}">
+      <div style="font-size:11px;font-weight:${isToday?'700':'400'};color:${isToday?'var(--accent)':'var(--text-2)'}">${d}</div>
+      ${evs.slice(0,3).map(e=>`<div style="font-size:10px;background:${e.desc&&e.desc.includes('[원소스')?'var(--accent-bg)':'#ECFDF5'};color:${e.desc&&e.desc.includes('[원소스')?'var(--accent-text)':'#065F46'};border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.title)}">${esc(e.title)}</div>`).join('')}
+      ${evs.length>3?`<div style="font-size:10px;color:var(--text-3);margin-top:1px">+${evs.length-3}건</div>`:''}
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function calMonthMove(dir){
+  calMonth.setMonth(calMonth.getMonth()+dir);
+  renderCalMonth();
+}
 </script>
 </body>
 </html>
