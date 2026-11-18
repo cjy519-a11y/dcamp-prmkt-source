@@ -1543,7 +1543,7 @@ async function commitLinksREF(pid,rid,key,label){
   r[key]=val;
   cancelREF(pid,rid,key);
   openReasonModal('status',what,async(reason)=>{
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs:p.reqs},logEntry);
     toast('수정됐어요.');
@@ -1611,6 +1611,11 @@ function getCurrentUser(){
 }
 function getCurrentTeam(){
   try{return localStorage.getItem('dcamp_userteam')||'';}catch{return '';}
+}
+function getCurrentWho(){
+  const name=getCurrentUser(), team=getCurrentTeam();
+  if(team&&name) return team+' '+name;
+  return name||team||'';
 }
 function openNameModal(){
   document.getElementById('name-input').value=getCurrentUser();
@@ -2529,7 +2534,7 @@ async function commitEventEF(pid){
   const what=`행사 일정 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
   cancelEF(pid,'event');
   openReasonModal('field','행사 일정을 수정했어요.',async(reason)=>{
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{event:val},logEntry);
     toast('수정됐어요.');
@@ -2555,7 +2560,7 @@ async function commitDocEF(pid){
   const what=`관련 자료 수정`;
   cancelEF(pid,'doc');
   openReasonModal('field','관련 자료를 수정했어요.',async(reason)=>{
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{doc:val},logEntry);toast('수정됐어요.');
   });
@@ -2577,7 +2582,7 @@ async function submitComment(){
   if(!val||!curProgId)return;
   const p=progs.find(x=>x.id===curProgId);
   if(!p)return;
-  const logEntry={id:uid(),who:getCurrentUser()||p?.person||'💬 댓글',what:val,ts:Date.now(),isComment:true};
+  const logEntry={id:uid(),who:getCurrentWho()||p?.person||'💬 댓글',what:val,ts:Date.now(),isComment:true};
   const cl=[...(p.changelog||[]),logEntry];
   p.changelog=cl;
   try{await apiPost({action:'update_prog',id:curProgId,patch:{changelog:cl},log:logEntry});}catch(e){}
@@ -2623,7 +2628,7 @@ function confirmDeleteReq(pid,rid,label){
   _deleteAction=async()=>{
     const p=progs.find(x=>x.id===pid);if(!p)return;
     const reqs=p.reqs.filter(r=>r.id!==rid);
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what:`${label} 요청 삭제`,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what:`${label} 요청 삭제`,ts:Date.now()};
     await updateProg(pid,{reqs},logEntry);
     closeModal('modal-delete');
     toast('삭제됐어요.');
@@ -2668,7 +2673,7 @@ async function commitEF(pid,key,label,multi){
     :`${label} 수정: "(없음)" → "${val.slice(0,35)}${val.length>35?'…':''}"`;
   cancelEF(pid,key);
   openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
     if(reason) logEntry.memo=reason;
     await updateProg(pid,{[key]:val},logEntry);
     toast('수정됐어요.');
@@ -2719,7 +2724,7 @@ async function commitDateRange(pid,rid,key,label,isdt){
   const old=r[key]||'';
   r[key]=val;
   const what=`${REQ_LABELS[r.type]||'요청'} · ${label} 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
-  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+  const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
   openReasonModal('status',what,async(reason)=>{
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs:p.reqs},logEntry);
@@ -2738,7 +2743,7 @@ async function commitChannels(pid,rid){
   const old=r.channels||'';
   r.channels=val;
   const what=`콘텐츠 · 희망 채널 수정: "${old||'(없음)'}" → "${val||'(없음)'}"`;
-  const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+  const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
   openReasonModal('status',what,async(reason)=>{
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs:p.reqs},logEntry);
@@ -2761,7 +2766,7 @@ async function commitREF(pid,rid,key,label,multi){
   cancelREF(pid,rid,key);
   openReasonModal('field', `"${label}" 항목을 수정했어요. 변경 이유를 남겨주세요.`, async(reason)=>{
     const reqs=p.reqs.map(x=>x.id===rid?{...x,[key]:val}:x);
-    const logEntry={id:uid(),who:getCurrentUser()||p.person||p.team,what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
     if(reason)logEntry.memo=reason;
     await updateProg(pid,{reqs},logEntry);
     toast('수정됐어요.');
@@ -2778,7 +2783,7 @@ async function changeReqStatus(pid,rid,val,label){
   const what=`${REQ_LABELS[rtype]||'요청'} 상태: "${prevLabel}" → "${label}"`;
   openReasonModal('status', `상태를 "${label}"으로 변경했어요. 이유를 남겨주세요.`, async(reason)=>{
     const reqs=p.reqs.map(r=>r.id===rid?{...r,status:val}:r);
-    const logEntry={id:uid(),who:'홍보팀',what,ts:Date.now()};
+    const logEntry={id:uid(),who:getCurrentWho()||p.person||p.team,what,ts:Date.now()};
     if(reason) logEntry.memo=reason;
     await updateProg(pid,{reqs},logEntry);
     toast('상태가 업데이트됐어요.');
@@ -2856,7 +2861,7 @@ async function submitAddReq(){
       r.pr_body=sv('mv-pr-body');r.pr_note=sv('mv-pr-note');
     }
     newReqs.push(r);
-    logs.push({id:uid(),who:getCurrentUser()||p.person||p.team,what:`${REQ_LABELS[t]} 요청 추가`,ts:Date.now()});
+    logs.push({id:uid(),who:getCurrentWho()||p.person||p.team,what:`${REQ_LABELS[t]} 요청 추가`,ts:Date.now()});
   });
   const cl=[...(p.changelog||[]),...logs];
   await updateProg(curProgId,{reqs:newReqs},logs[0]);
@@ -2959,7 +2964,7 @@ async function submitProg(){
     target:sv('fv-target'),benefit:sv('fv-benefit'),event:eventVal,
     doc:getDocLinks(),
     reqs, createdAt:Date.now(),
-    changelog:[{id:uid(),who:getCurrentUser()||person,what:'프로그램 등록',ts:Date.now()}],
+    changelog:[{id:uid(),who:getCurrentWho()||person,what:'프로그램 등록',ts:Date.now()}],
   };
   const newId=await saveNew(data);
   resetForm();
