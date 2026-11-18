@@ -3210,7 +3210,7 @@ function renderCalList(){
           <span style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;flex-shrink:0;background:${isFromSource?'var(--accent-bg)':'#ECFDF5'};color:${isFromSource?'var(--accent-text)':'#065F46'}">
             ${isFromSource?'원소스':'캘린더'}
           </span>
-          <span style="font-size:13px;flex:1">${esc(e.title)}</span>
+          <span style="font-size:13px;flex:1">${(e.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>
           <span style="font-size:11px;color:var(--text-3)">${timeStr}</span>
         </div>`;
       }).join('')}
@@ -3242,7 +3242,7 @@ function renderCalMonth(){
     const evs=evMap[d]||[];
     html+=`<div style="min-height:80px;padding:4px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:${isToday?'var(--accent-bg)':''}">
       <div style="font-size:11px;font-weight:${isToday?'700':'400'};color:${isToday?'var(--accent)':'var(--text-2)'}">${d}</div>
-      ${evs.slice(0,3).map(e=>`<div style="font-size:10px;background:${e.desc&&e.desc.includes('[원소스')?'var(--accent-bg)':'#ECFDF5'};color:${e.desc&&e.desc.includes('[원소스')?'var(--accent-text)':'#065F46'};border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.title)}">${esc(e.title)}</div>`).join('')}
+      ${evs.slice(0,3).map(e=>{const t=(e.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');const src=e.desc&&e.desc.includes('DCAMP_SRC');return`<div style="font-size:10px;background:${src?'var(--accent-bg)':'#ECFDF5'};color:${src?'var(--accent-text)':'#065F46'};border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t}">${t}</div>`;}).join('')}
       ${evs.length>3?`<div style="font-size:10px;color:var(--text-3);margin-top:1px">+${evs.length-3}건</div>`:''}
     </div>`;
   }
