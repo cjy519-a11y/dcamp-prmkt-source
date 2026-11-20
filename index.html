@@ -895,7 +895,7 @@ select{cursor:pointer}
         <button class="btn btn-ghost btn-sm" onclick="calMonthMove(1)"><i class="ti ti-chevron-right"></i></button>
       </div>
       <div class="card" style="overflow:visible">
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border)">
+        <div id="cal-month-header" style="display:grid;grid-template-columns:0.6fr 1fr 1fr 1fr 1fr 1fr 0.6fr;border-bottom:1px solid var(--border)">
           <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">일</div>
           <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">월</div>
           <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">화</div>
@@ -904,7 +904,7 @@ select{cursor:pointer}
           <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">금</div>
           <div style="padding:6px;text-align:center;font-size:11px;font-weight:600;color:var(--text-3)">토</div>
         </div>
-        <div id="cal-month-grid" style="display:grid;grid-template-columns:repeat(7,1fr)"></div>
+        <div id="cal-month-grid" style="display:grid;grid-template-columns:0.6fr 1fr 1fr 1fr 1fr 1fr 0.6fr"></div>
       </div>
     </div>
   </div>
@@ -3320,12 +3320,12 @@ function renderCalMonth(){
     }
   });
   let html='';
-  for(let i=0;i<firstDay;i++) html+=`<div style="min-height:80px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)"></div>`;
+  for(let i=0;i<firstDay;i++) html+=`<div style="height:90px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)"></div>`;
   for(let d=1;d<=lastDate;d++){
     const date=new Date(year,month,d); date.setHours(0,0,0,0);
     const isToday=date.getTime()===today.getTime();
     const evs=evMap[d]||[];
-    html+=`<div style="min-height:80px;padding:4px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:${isToday?'var(--surface-sub)':''}">
+    html+=`<div style="height:90px;padding:4px;overflow:hidden;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:${isToday?'var(--surface-sub)':''}">
       <div style="font-size:11px;font-weight:${isToday?'700':'400'};color:${isToday?'var(--text)':'var(--text-2)'}">${d}${isToday?'<span style="font-size:9px;background:var(--surface-sub);color:var(--text-3);border-radius:3px;padding:0 3px;margin-left:2px">오늘</span>':''}</div>
       ${evs.slice(0,3).map(e=>{
         const parsed=parseCalTitle(e.title||'');
