@@ -879,16 +879,16 @@ select{cursor:pointer}
     <div class="topbar">
       <h2>콘텐츠 캘린더</h2>
       <div style="display:flex;gap:6px">
-        <button class="btn btn-secondary btn-sm" id="cal-tab-list" onclick="switchCalView('list')" style="font-weight:600;border-color:var(--accent);color:var(--accent)"><i class="ti ti-list"></i>리스트</button>
-        <button class="btn btn-secondary btn-sm" id="cal-tab-month" onclick="switchCalView('month')"><i class="ti ti-calendar-month"></i>월별</button>
+        <button class="btn btn-secondary btn-sm" id="cal-tab-month" onclick="switchCalView('month')" style="font-weight:600;border-color:var(--accent);color:var(--accent)"><i class="ti ti-calendar-month"></i>월별</button>
+        <button class="btn btn-secondary btn-sm" id="cal-tab-list" onclick="switchCalView('list')"><i class="ti ti-list"></i>리스트</button>
       </div>
     </div>
     <!-- 리스트 뷰 -->
-    <div id="cal-view-list">
+    <div id="cal-view-list" style="display:none">
       <div id="cal-list-body" class="card"><div class="empty"><i class="ti ti-loader"></i>불러오는 중…</div></div>
     </div>
     <!-- 월별 뷰 -->
-    <div id="cal-view-month" style="display:none">
+    <div id="cal-view-month">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
         <button class="btn btn-ghost btn-sm" onclick="calMonthMove(-1)"><i class="ti ti-chevron-left"></i></button>
         <span id="cal-month-label" style="font-size:15px;font-weight:700;min-width:100px;text-align:center"></span>
@@ -3192,7 +3192,7 @@ initUsername();
 
 // ── 캘린더 ───────────────────────────────────────────
 let calEvents = [];
-let calView = 'list';
+let calView = 'month';
 let calMonth = new Date();
 calMonth.setDate(1);
 
@@ -3236,10 +3236,19 @@ function renderCalList(){
   const today = new Date(); today.setHours(0,0,0,0);
   const groups = {};
   calEvents.forEach(e => {
-    const d = new Date(e.start); d.setHours(0,0,0,0);
-    const key = d.toISOString().slice(0,10);
-    if(!groups[key]) groups[key] = [];
-    groups[key].push(e);
+    const start = new Date(e.start); start.setHours(0,0,0,0);
+    const end = new Date(e.end); end.setHours(0,0,0,0);
+    // 행사([행사])는 기간 전체, 나머지는 시작일만
+    const parsed = parseCalTitle(e.title||'');
+    const isEvent = parsed && parsed.badge && parsed.badge.label === '행사';
+    const cur = new Date(start);
+    const limit = isEvent ? end : start;
+    while(cur <= limit) {
+      const key = cur.toISOString().slice(0,10);
+      if(!groups[key]) groups[key] = [];
+      groups[key].push(e);
+      cur.setDate(cur.getDate()+1);
+    }
   });
 
   const days = ['일','월','화','수','목','금','토'];
@@ -3283,9 +3292,15 @@ function renderCalMonth(){
   const today=new Date(); today.setHours(0,0,0,0);
   const evMap={};
   calEvents.forEach(e=>{
-    const d=new Date(e.start);
-    if(d.getFullYear()===year&&d.getMonth()===month){
-      const k=d.getDate(); if(!evMap[k])evMap[k]=[]; evMap[k].push(e);
+    const start=new Date(e.start); start.setHours(0,0,0,0);
+    const end=new Date(e.end); end.setHours(0,0,0,0);
+    // 기간 내 모든 날짜에 추가
+    const cur=new Date(start);
+    while(cur<=end){
+      if(cur.getFullYear()===year&&cur.getMonth()===month){
+        const k=cur.getDate(); if(!evMap[k])evMap[k]=[]; evMap[k].push(e);
+      }
+      cur.setDate(cur.getDate()+1);
     }
   });
   let html='';
@@ -3296,7 +3311,7 @@ function renderCalMonth(){
     const evs=evMap[d]||[];
     html+=`<div style="min-height:80px;padding:4px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:${isToday?'var(--surface-sub)':''}">
       <div style="font-size:11px;font-weight:${isToday?'700':'400'};color:${isToday?'var(--text)':'var(--text-2)'}">${d}${isToday?'<span style="font-size:9px;background:var(--surface-sub);color:var(--text-3);border-radius:3px;padding:0 3px;margin-left:2px">오늘</span>':''}</div>
-      ${evs.slice(0,3).map(e=>{const parsed=parseCalTitle(e.title||'');const t=(parsed?parsed.rest:e.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');const badge=parsed?parsed.badge:null;const badgeStr=badge?`[${badge.label}] `:'';return`<div style="font-size:10px;border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:${badge?badge.bg:'var(--surface-sub)'};color:${badge?badge.color:'var(--text-2)'}" title="${badgeStr}${t}">${badgeStr}${t}</div>`;}).join('')}
+      ${evs.slice(0,3).map(e=>{const parsed=parseCalTitle(e.title||'');const t=(parsed?parsed.rest:e.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');const badge=parsed?parsed.badge:null;const badgeStr=badge?`[${badge.label}] `:'';return`<div style="font-size:10px;border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;background:${badge?badge.bg:'var(--surface-sub)'};color:${badge?badge.color:'var(--text-2)'};cursor:default" title="${badgeStr}${t}">${badgeStr}${t}</div>`;}).join('')}
       ${evs.length>3?`<div style="font-size:10px;color:var(--text-3);margin-top:1px">+${evs.length-3}건</div>`:''}
     </div>`;
   }
