@@ -3296,7 +3296,7 @@ function renderCalMonth(){
     const evs=evMap[d]||[];
     html+=`<div style="min-height:80px;padding:4px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);background:${isToday?'var(--surface-sub)':''}">
       <div style="font-size:11px;font-weight:${isToday?'700':'400'};color:${isToday?'var(--text)':'var(--text-2)'}">${d}${isToday?'<span style="font-size:9px;background:var(--surface-sub);color:var(--text-3);border-radius:3px;padding:0 3px;margin-left:2px">오늘</span>':''}</div>
-      ${evs.slice(0,3).map(e=>{const t=(e.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');const src=e.desc&&e.desc.includes('DCAMP_SRC');return`<div style="font-size:10px;background:${src?'var(--accent-bg)':'#ECFDF5'};color:${src?'var(--accent-text)':'#065F46'};border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t}">${t}</div>`;}).join('')}
+      ${evs.slice(0,3).map(e=>{const parsed=parseCalTitle(e.title||'');const t=(parsed?parsed.rest:e.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');const badge=parsed?parsed.badge:null;const badgeStr=badge?`[${badge.label}] `:'';return`<div style="font-size:10px;border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:${badge?badge.bg:'var(--surface-sub)'};color:${badge?badge.color:'var(--text-2)'}" title="${badgeStr}${t}">${badgeStr}${t}</div>`;}).join('')}
       ${evs.length>3?`<div style="font-size:10px;color:var(--text-3);margin-top:1px">+${evs.length-3}건</div>`:''}
     </div>`;
   }
