@@ -1774,15 +1774,24 @@ function showOfflineBanner(){
 }
 
 async function initDB(){
+  // 1. 캐시 먼저 즉시 표시
+  let hasCached=false;
+  try{
+    const cached=localStorage.getItem('dcamp_progs_cache');
+    if(cached){progs=JSON.parse(cached);progs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));renderAll();hasCached=true;}
+  }catch{}
+
+  // 2. 백그라운드에서 최신 데이터 로드
   try{
     const data = await apiGet({action:'list'});
-    if(data.error){showOfflineBanner();loadCached();return;}
+    if(data.error){if(!hasCached){showOfflineBanner();loadDemo();}return;}
     progs = data.progs||[];
     progs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-    // 최신 데이터 localStorage에 저장
     try{localStorage.setItem('dcamp_progs_cache',JSON.stringify(progs));}catch{}
     renderAll();
-  }catch(e){showOfflineBanner();loadCached();}
+  }catch(e){
+    if(!hasCached){showOfflineBanner();loadDemo();}
+  }
 }
 
 function loadCached(){
@@ -3298,10 +3307,14 @@ function renderCalList(){
         const badgeHtml = badge
           ? `<span style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;flex-shrink:0;background:${badge.bg};color:${badge.color}">${badge.label}</span>`
           : '';
-        return `<div style="padding:9px 16px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);opacity:${isPast?'0.6':'1'}">
+        const startD=new Date(e.start); const endD=new Date(e.end);
+        const fmtMD=d=>`${d.getMonth()+1}/${d.getDate()}`;
+        const rangeStr=startD.toDateString()===endD.toDateString()?fmtMD(startD):`${fmtMD(startD)}~${fmtMD(endD)}`;
+        const tooltip=(e.title||'')+' ('+rangeStr+')';
+        return `<div style="padding:9px 16px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);opacity:${isPast?'0.6':'1'}" title="${tooltip.replace(/"/g,'&quot;')}">
           ${badgeHtml}
           <span style="font-size:13px;flex:1">${titleText}</span>
-          <span style="font-size:11px;color:var(--text-3)">${timeStr}</span>
+          <span style="font-size:11px;color:var(--text-3)">${timeStr||rangeStr}</span>
         </div>`;
       }).join('')}
     </div>`;
@@ -3352,13 +3365,12 @@ function renderCalMonth(){
     const isEvent=lbl==='행사';
     const isRecruit=lbl==='모집';
     if(isRecruit){
-      [start,end].forEach((day,idx)=>{
-        if(day.getFullYear()===year&&day.getMonth()===month){
-          const k=day.getDate();
-          if(!evMap[k])evMap[k]=[];
-          evMap[k].push({...e,_recruitMark:idx===0?'시작':'마감'});
-        }
-      });
+      // Apps Script가 이미 시작/마감 각각 별도 이벤트로 올림 → start날짜에만 표시
+      if(start.getFullYear()===year&&start.getMonth()===month){
+        const k=start.getDate();
+        if(!evMap[k])evMap[k]=[];
+        evMap[k].push(e);
+      }
     } else {
       const cur=new Date(start);
       const limit=isEvent?end:start;
@@ -3378,21 +3390,31 @@ function renderCalMonth(){
     const isRec=badge&&badge.label==='모집';
     let rest=parsed?parsed.rest:e.title||'';
     let periodStr='';
+    let mark='';
     if(isRec){
+      // 제목에서 "시작"/"마감" 추출 → 뱃지용
+      const markM=rest.match(/\s*(시작|마감)/);
+      if(markM) mark=markM[1];
+      // 기간 괄호 추출
       const pm=rest.match(/(\(\d{1,2}\/\d{1,2}~\d{1,2}\/\d{1,2}\))/);
       if(pm) periodStr=pm[1];
+      // 순수 프로그램명만
       rest=rest.replace(/\s*(시작|마감)\s*/g,' ').replace(/\(\d{1,2}\/\d{1,2}~\d{1,2}\/\d{1,2}\)/g,'').trim();
     }
     const tEsc=rest.replace(/&/g,'&amp;').replace(/</g,'&lt;');
-    const mark=e._recruitMark||'';
     let badgeLabel=badge?badge.label:'';
     if(isRec&&mark) badgeLabel=`모집 ${mark}`;
     const badgeStr=badgeLabel?`[${badgeLabel}] `:'';
     const periodDisp=isRec&&periodStr?` ${periodStr}`:'';
     const fullTitle=`${badgeStr}${tEsc}${periodDisp}`;
+    // 툴팁: 기간 없으면 start~end 날짜 추가
+    const sd=new Date(e.start), ed=new Date(e.end);
+    const fmtMD2=d=>`${d.getMonth()+1}/${d.getDate()}`;
+    const dateRange=sd.toDateString()===ed.toDateString()?fmtMD2(sd):`${fmtMD2(sd)}~${fmtMD2(ed)}`;
+    const tooltipStr=periodDisp?fullTitle:`${fullTitle} (${dateRange})`;
     const bg=badge?badge.bg:'var(--surface-sub)';
     const color=badge?badge.color:'var(--text-2)';
-    return`<div style="font-size:10px;border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:${bg};color:${color};cursor:default" title="${fullTitle}">${fullTitle}</div>`;
+    return`<div style="font-size:10px;border-radius:3px;padding:1px 4px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:${bg};color:${color};cursor:default" title="${tooltipStr}">${fullTitle}</div>`;
   }
 
   // 셀 생성
