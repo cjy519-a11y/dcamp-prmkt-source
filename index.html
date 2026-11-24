@@ -2358,9 +2358,12 @@ function renderDetail(p){
       </div>
     </div>`:'';
 
+    // 관련자료: 읽기뷰에 (+) 버튼
+    const docPlusBtn=isDoc?`<button type="button" onclick="startEF('${p.id}','doc',true)" title="링크 추가" style="margin-left:4px;font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;font-weight:600;vertical-align:middle">+ 추가</button>`:'';
+
     return`<div class="ef-row" id="ef-${p.id}-${f.key}">
       <div class="ef-label">${f.label}</div>
-      <div class="ef-val${val?'':' empty-val'}" ondblclick="startEF('${p.id}','${f.key}',${!!f.multi})" title="더블클릭하여 수정">${display}</div>
+      <div class="ef-val${val?'':' empty-val'}" ondblclick="startEF('${p.id}','${f.key}',${!!f.multi})" title="더블클릭하여 수정">${display}${docPlusBtn}</div>
       <div class="ef-input-wrap">
         ${isDoc?docInput:isEvent?eventInput:f.multi?`<textarea id="efi-${p.id}-${f.key}" rows="3">${val}</textarea>`:`<input id="efi-${p.id}-${f.key}" type="text" value="${String(val).replace(/"/g,'&quot;')}">`}
         ${isDoc||isEvent?'':`<div class="ef-actions">
@@ -2487,9 +2490,19 @@ function renderDetail(p){
             inputHtml=`<input id="efi-${eid}" type="text" value="${String(val).replace(/"/g,'&quot;')}">`;
           }
 
+          // 모집링크: 읽기뷰를 하이퍼링크 + (+) 버튼으로
+          let readDisplay=display;
+          if(ftype==='links'){
+            const linkLines2=(val||'').split('\n').filter(Boolean);
+            readDisplay=(linkLines2.length
+              ? linkLines2.map(u=>`<a href="${u.replace(/"/g,'&quot;')}" target="_blank" rel="noopener" style="display:block;color:var(--accent);text-decoration:none;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:1px" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${u}</a>`).join('')
+              : '')
+              +`<button type="button" onclick="startREF('${pid2}','${rid2}','${key2}',${multi})" style="margin-top:3px;font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;font-weight:600;display:block">+ 추가</button>`;
+          }
+
           return`<div class="ef-row" id="ef-${eid}">
             <div class="ef-label">${f.label}</div>
-            <div class="ef-val${val?'':' empty-val'}" ondblclick="startREF('${pid2}','${rid2}','${key2}',${multi})" title="더블클릭하여 수정">${display}</div>
+            <div class="ef-val${val?'':' empty-val'}" ondblclick="startREF('${pid2}','${rid2}','${key2}',${multi})" title="더블클릭하여 수정">${readDisplay}</div>
             <div class="ef-input-wrap">
               ${inputHtml}${actionsHtml}
             </div>
@@ -2529,6 +2542,9 @@ function renderChangelog(p){
           ${!isComment?`<button type="button" onclick="toggleMemoInput('${c.id}')"
             style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;font-weight:500"
             id="memo-btn-${c.id}">${c.memo?'사유 수정':'+ 사유 추가'}</button>`:''}
+          <button type="button" onclick="deleteChangelog('${p.id}','${c.id}')"
+            style="font-size:11px;color:var(--text-3);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;margin-left:auto"
+            title="변경내역 삭제">삭제</button>
         </div>
         <div id="memo-input-wrap-${c.id}" style="display:none;margin-top:6px;display:none">
           <input type="text" id="memo-input-${c.id}"
@@ -2544,6 +2560,16 @@ function renderChangelog(p){
       </div>
     </div>`;
   }).join('');
+}
+
+// ── CHANGELOG DELETE ──────────────────────────────────
+async function deleteChangelog(pid,cid){
+  if(!confirm('이 변경내역을 삭제할까요?')) return;
+  const p=progs.find(x=>x.id===pid);
+  if(!p)return;
+  p.changelog=(p.changelog||[]).filter(c=>c.id!==cid);
+  await api('updateProg',{id:pid,data:{changelog:p.changelog}});
+  renderChangelog(p);
 }
 
 // ── CHANGELOG MEMO ────────────────────────────────────
